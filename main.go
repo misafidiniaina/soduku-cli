@@ -70,10 +70,17 @@ func (m Model) View() string {
 		row = 1
 		for {
 			if row <= 9 {
+				var value string
+				if m.Cells[counter-1][row-1] == 0 {
+					value = " "
+				}else{
+					value = fmt.Sprint(m.Cells[counter-1][row-1])
+				}
+
 				if row == 3 || row == 6{
-					gameTable = gameTable +"| "+fmt.Sprint(m.Cells[counter-1][row-1])+" |   "
+					gameTable = gameTable +"| "+value+" |   "
 				} else{
-					gameTable = gameTable +"| "+fmt.Sprint(m.Cells[counter-1][row-1])+" | "
+					gameTable = gameTable +"| "+value+" | "
 				}
 				// we will add the model value based on row and counter value
 			}else{
