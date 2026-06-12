@@ -5,12 +5,17 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/misafidiniaina/sudoku/internal/logic"
 )
 
 
 type Model struct {
+
+	// Data for the game 
 	Cells [9][9]int
-	cursorPostion [2]int
+
+	// Postion of the cursor index 0 represting the x axes and index 1 for the y axes
+	cursor [2]int
 }
 
 
@@ -32,8 +37,16 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 
 		case "up":
-			
-			m.Cells[8][8] = 2
+			m.cursor[1] = logic.CursorHandling("up", m.cursor[1])
+
+		case "down":
+			m.cursor[1] = logic.CursorHandling("down", m.cursor[1])
+		
+		case "left":
+			m.cursor[0] = logic.CursorHandling("left", m.cursor[0])
+
+		case "right":
+			m.cursor[0] = logic.CursorHandling("right", m.cursor[0])
 			
 		}
 
@@ -47,6 +60,7 @@ func (m Model) View() string {
 	var gameTable string
 
 	gameTable = "\nWelcome to our sodduku game and have fun\n\n"
+
 
 	counter := 1
 
@@ -71,6 +85,7 @@ func (m Model) View() string {
 		for {
 			if row <= 9 {
 				var value string
+				// counter-1 and row-1 because the row and counter start with 1 not 0 like the data (m.Cells) index
 				if m.Cells[counter-1][row-1] == 0 {
 					value = " "
 				}else{
@@ -104,6 +119,7 @@ func (m Model) View() string {
 		counter = counter + 1
 	}
 	gameTable = gameTable + "\n----- ----- -----   ----- ----- -----   ----- ----- ----- \n\n"
+	gameTable = gameTable + "The cursor position is in: " + fmt.Sprint(m.cursor)
 	return fmt.Sprintf("%v",gameTable)
 }
 
@@ -118,7 +134,7 @@ func main() {
 			{0,8,5, 0,0,2, 0,0,4},{7,0,3 ,0,0,5, 0,2,0},{4,0,9 ,3,7,0, 5,0,1},
 			// create a function that will generate such data
 		},
-		cursorPostion: [2]int{0,0},
+		cursor: [2]int{0,0},
 		
 	})
 

@@ -1,0 +1,41 @@
+package logic
+
+func CursorHandling(Move string, position int) int{
+	var result int
+	if Move == "up" {
+		if position == 0 {
+			result = 8
+		}else{
+			result = position - 1
+		}
+		
+	}
+
+	if Move == "down" {
+		if position == 8 {
+			result = 0
+		}else{
+			result = position + 1
+		}
+		
+	}
+
+	if Move == "left" {
+		if position == 0 {
+			result = 8
+		}else{
+			result = position - 1
+		}
+		
+	}
+
+	if Move == "right" {
+		if position == 8 {
+			result = 0
+		}else{
+			result = position + 1
+		}
+		
+	}
+	return result
+}
