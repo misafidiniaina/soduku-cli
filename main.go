@@ -28,10 +28,15 @@ func (m Model) Init() tea.Cmd {
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
+	i := m.cursor[0]
+	j := m.cursor[1]
+
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 
-		switch msg.String(){
+		key := msg.String()
+
+		switch key{
 
 		case "q", "ctrl+c":
 			return m, tea.Quit
@@ -47,6 +52,20 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "right":
 			m.cursor[0] = logic.CursorHandling("right", m.cursor[0])
+
+		case "backspace":
+			m.Cells[j][i] = 0
+		
+		case "delete":
+			m.Cells[j][i] = 0
+		
+
+		default:
+			if len(key) == 1 && key[0] >= '1' && key[0] <= '9' {
+				
+
+				m.Cells[j][i] = int(key[0] - '0')
+			}
 			
 		}
 
@@ -129,9 +148,17 @@ func main() {
 
 	
 	p := tea.NewProgram(Model{Cells: [9][9]int{
-			{0,4,9, 0,3,0 ,8,0,0},{0,3,1, 0,7,0 ,0,4,0},{0,0,0, 9,8,0, 0,0,0},
-			{0,0,6, 0,5,0, 0,1,0},{1,5,7, 2,8,4, 0,0,0},{8,0,2 ,1,0,6, 0,0,5},
-			{0,8,5, 0,0,2, 0,0,4},{7,0,3 ,0,0,5, 0,2,0},{4,0,9 ,3,7,0, 5,0,1},
+			{0,4,9, 0,3,0 ,8,0,0},
+			{0,3,1, 0,7,0 ,0,4,0},
+			{0,0,0, 9,8,0, 0,0,0},
+
+			{0,0,6, 0,5,0, 0,1,0},
+			{1,5,7, 2,8,4, 0,0,0},
+			{8,0,2 ,1,0,6, 0,0,5},
+
+			{0,8,5, 0,0,2, 0,0,4},
+			{7,0,3 ,0,0,5, 0,2,0},
+			{4,0,9 ,3,7,0, 5,0,1},
 			// create a function that will generate such data
 		},
 		cursor: [2]int{0,0},

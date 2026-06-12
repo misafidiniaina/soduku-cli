@@ -2,7 +2,7 @@ package logic
 
 func CursorHandling(Move string, position int) int{
 	var result int
-	if Move == "up" {
+	if Move == "left" {
 		if position == 0 {
 			result = 8
 		}else{
@@ -20,7 +20,7 @@ func CursorHandling(Move string, position int) int{
 		
 	}
 
-	if Move == "left" {
+	if Move == "up" {
 		if position == 0 {
 			result = 8
 		}else{
