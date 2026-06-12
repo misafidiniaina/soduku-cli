@@ -10,6 +10,7 @@ import (
 
 type Model struct {
 	Cells [9][9]int
+	cursorPostion [2]int
 }
 
 
@@ -45,6 +46,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m Model) View() string {
 	var gameTable string
 
+	gameTable = "\nWelcome to our sodduku game and have fun\n\n"
+
 	counter := 1
 
 	for {
@@ -68,9 +71,9 @@ func (m Model) View() string {
 		for {
 			if row <= 9 {
 				if row == 3 || row == 6{
-					gameTable = gameTable +"| "+fmt.Sprint(counter)+" |   "
+					gameTable = gameTable +"| "+fmt.Sprint(m.Cells[counter-1][row-1])+" |   "
 				} else{
-					gameTable = gameTable +"| "+fmt.Sprint(row)+" | "
+					gameTable = gameTable +"| "+fmt.Sprint(m.Cells[counter-1][row-1])+" | "
 				}
 				// we will add the model value based on row and counter value
 			}else{
@@ -100,7 +103,17 @@ func (m Model) View() string {
 
 
 func main() {
-	p := tea.NewProgram(Model{})
+
+	
+	p := tea.NewProgram(Model{Cells: [9][9]int{
+			{0,4,9, 0,3,0 ,8,0,0},{0,3,1, 0,7,0 ,0,4,0},{0,0,0, 9,8,0, 0,0,0},
+			{0,0,6, 0,5,0, 0,1,0},{1,5,7, 2,8,4, 0,0,0},{8,0,2 ,1,0,6, 0,0,5},
+			{0,8,5, 0,0,2, 0,0,4},{7,0,3 ,0,0,5, 0,2,0},{4,0,9 ,3,7,0, 5,0,1},
+			// create a function that will generate such data
+		},
+		cursorPostion: [2]int{0,0},
+		
+	})
 
 	if _, err := p.Run(); err != nil {
 		fmt.Println(err)
