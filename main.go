@@ -79,123 +79,16 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 
 func (m Model) View() string {
-	var gameTable string
 
-	welcomeStyle := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("#ff0000")).
-		Border(lipgloss.NormalBorder())
-
-	footerStyle := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("#00ff00")).
-		Border(lipgloss.NormalBorder())
-
-
-	bigblockStyle := lipgloss.NewStyle().
-		Width(60).
-		Border(lipgloss.NormalBorder()).
-		BorderBackground(lipgloss.Color("#0dfsdf")).
-		Background(lipgloss.Color("62")).
-		Foreground(lipgloss.Color("#000")).
-		Bold(true)
-
-
-	header := lipgloss.JoinHorizontal(
-		lipgloss.Center,
-		welcomeStyle.Render("Welcome to our soduku game"),
-		footerStyle.Render("this is the footer"),
-	)
-	
-	
-
-	
-	for i := 0; i < 9; i++ {
-		gameTable = gameTable + ui.Line(m.Cells[i]) +"\n"
-	}
-
-
-	
-
-	finalresult := lipgloss.JoinVertical(
+	GameView := lipgloss.JoinVertical(
 		lipgloss.Left,
-		header,
-		gameTable,
-		bigblockStyle.Render("salut"),
+		ui.GameBoard(m.Cells),
+		ui.BigblockStyle.Render("salut"),
 		
 		"\n\n",
 	)
 
-	wrapperStyle := lipgloss.NewStyle().
-		Border(lipgloss.NormalBorder())
-
-	
-	wrapper := wrapperStyle.Render(finalresult) + "\n\n"
-
-
-
-	// gameTable = "\nWelcome to our sodduku game and have fun\n\n"
-
-
-	// counter := 1
-
-	// for {
-	// 	row := 1
-	// 	for {
-	// 		if row <= 9 {
-
-	// 			if row == 3 || row == 6{
-	// 				gameTable = gameTable + "-----   "
-	// 			} else{
-	// 				gameTable = gameTable + "----- "
-	// 			// gameTable = gameTable + fmt.Sprint(row) + fmt.Sprint(counter) + "  "
-	// 			}
-	// 		}else{
-	// 			break
-	// 		}
-	// 		row = row + 1
-	// 	}
-	// 	gameTable = gameTable + "\n"
-	// 	row = 1
-	// 	for {
-	// 		if row <= 9 {
-	// 			var value string
-	// 			// counter-1 and row-1 because the row and counter start with 1 not 0 like the data (m.Cells) index
-	// 			if m.Cells[counter-1][row-1] == 0 {
-	// 				value = " "
-	// 			}else{
-	// 				value = fmt.Sprint(m.Cells[counter-1][row-1])
-	// 			}
-
-	// 			if row == 3 || row == 6{
-	// 				gameTable = gameTable +"| "+value+" |   "
-	// 			} else{
-	// 				gameTable = gameTable +"| "+value+" | "
-	// 			}
-	// 			// we will add the model value based on row and counter value
-	// 		}else{
-	// 			break
-	// 		}
-	// 		row = row + 1
-	// 	}
-		
-		
-	// 	if counter < 9 {
-	// 		if counter == 3 || counter == 6 || counter == 9{
-	// 			gameTable = gameTable + "\n----- ----- -----   ----- ----- -----   ----- ----- ----- \n\n"
-				
-	// 		} else{
-	// 			gameTable = gameTable + "\n"
-	// 		}
-			
-	// 	}else {
-	// 		break
-	// 	}
-	// 	counter = counter + 1
-	// }
-	// gameTable = gameTable + "\n----- ----- -----   ----- ----- -----   ----- ----- ----- \n\n"
-	// gameTable = gameTable + "The cursor position is in: " + fmt.Sprint(m.cursor)
-	// return fmt.Sprintf("%v",gameTable)
+	wrapper := ui.WrapperStyle.Render(GameView) + "\n\n"
 	return wrapper
 }
 
