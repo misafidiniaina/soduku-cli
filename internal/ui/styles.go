@@ -7,7 +7,7 @@ import (
 
 var(
 	Primary   = lipgloss.Color("#7D56F4")
-	Secondary = lipgloss.Color("#F25D94")
+	Secondary = lipgloss.Color("#ff2474ff")
 	Success   = lipgloss.Color("#04B575")
 	Warning   = lipgloss.Color("#F2A900")
 	Muted     = lipgloss.Color("#626262")
@@ -21,7 +21,13 @@ var(
 		Align(lipgloss.Center).
 		PaddingLeft(1).
 		PaddingRight(1).
-		MarginRight(1)
+		MarginRight(1).
+		Bold(true)
+
+	SelectedCellStyle = CellsStyle.
+		Border(lipgloss.DoubleBorder()).
+		BorderForeground(lipgloss.Color(Secondary))
+		
 
 	WelcomeStyle = lipgloss.NewStyle().
 		Bold(true).

@@ -6,10 +6,15 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-func GameBoard(Data [9][9]int) string{
+func GameBoard(Data [9][9]int, cursor [2]int) string{
 	var result string
-	for i := 0; i < 9; i++ {
-		result = result + Line(Data[i]) +"\n"
+	for i := range 9 {
+		if i == 2 || i == 5 {
+			result = result + Line(Data[i], cursor, i) +"\n\n"
+		}else{
+			result = result + Line(Data[i], cursor, i) +"\n"
+		}
+		
 	}
 	return result
 }

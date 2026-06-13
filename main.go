@@ -83,7 +83,7 @@ func (m Model) View() string {
 	GameView := lipgloss.JoinVertical(
 		lipgloss.Left,
 		ui.GameHeader(125, 2, "12:23"),
-		ui.GameBoard(m.Cells),
+		ui.GameBoard(m.Cells, m.cursor),
 		ui.CommandHelper(),
 	)
 
