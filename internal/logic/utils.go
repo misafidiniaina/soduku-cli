@@ -39,3 +39,8 @@ func CursorHandling(Move string, position int) int{
 	}
 	return result
 }
+
+
+func IsEditable(postion [2]int) bool{
+	return GenerateData()[postion[1]][postion[0]] == 0
+}

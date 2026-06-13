@@ -7,26 +7,40 @@ import (
 
 var(
 	Primary   = lipgloss.Color("#7D56F4")
-	Secondary = lipgloss.Color("#ff2474ff")
+	Secondary = lipgloss.Color("#ff005d")
 	Success   = lipgloss.Color("#04B575")
 	Warning   = lipgloss.Color("#F2A900")
-	Muted     = lipgloss.Color("#626262")
-	Command     = lipgloss.Color("#87CEEB")
+	Muted     = lipgloss.Color("#a1a1a1")
+	Command   = lipgloss.Color("#87CEEB")
+	Initial	  = lipgloss.Color("#4b69ff")
 )
 
 
 var(
-	CellsStyle = lipgloss.NewStyle().
+	NoEditableCellsStyle = lipgloss.NewStyle().
 		Border(lipgloss.NormalBorder()).
+		BorderForeground(Muted).
 		Align(lipgloss.Center).
 		PaddingLeft(1).
 		PaddingRight(1).
 		MarginRight(1).
 		Bold(true)
 
-	SelectedCellStyle = CellsStyle.
+	NoEditableSelectedCellStyle = NoEditableCellsStyle.
 		Border(lipgloss.DoubleBorder()).
-		BorderForeground(lipgloss.Color(Secondary))
+		BorderForeground(Secondary)
+	
+	EditableCellStyle = lipgloss.NewStyle().
+		Border(lipgloss.NormalBorder()).
+		BorderForeground(Muted).
+		Align(lipgloss.Center).
+		PaddingLeft(1).
+		PaddingRight(1).
+		MarginRight(1)
+	
+	EditableSelectedCellStyle = EditableCellStyle.
+		Border(lipgloss.DoubleBorder()).
+		BorderForeground(Secondary)
 		
 
 	WelcomeStyle = lipgloss.NewStyle().

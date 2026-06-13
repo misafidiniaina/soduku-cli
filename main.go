@@ -15,6 +15,7 @@ type Model struct {
 
 	// Data for the game 
 	Cells [9][9]int
+	
 
 	// Postion of the cursor index 0 represting the x axes and index 1 for the y axes
 	cursor [2]int
@@ -65,7 +66,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		
 
 		default:
-			if len(key) == 1 && key[0] >= '1' && key[0] <= '9' {
+			if len(key) == 1 && key[0] >= '1' && key[0] <= '9' && logic.IsEditable(m.cursor){
 				m.Cells[j][i] = int(key[0] - '0')
 				//because the key is an ASCII
 			}
@@ -95,24 +96,8 @@ func (m Model) View() string {
 
 func main() {
 
-	
-	p := tea.NewProgram(Model{Cells: [9][9]int{
-			{0,4,9, 0,3,0 ,8,0,0},
-			{0,3,1, 0,7,0 ,0,4,0},
-			{0,0,0, 9,8,0, 0,0,0},
-
-			{0,0,6, 0,5,0, 0,1,0},
-			{1,5,7, 2,8,4, 0,0,0},
-			{8,0,2 ,1,0,6, 0,0,5},
-
-			{0,8,5, 0,0,2, 0,0,4},
-			{7,0,3 ,0,0,5, 0,2,0},
-			{4,0,9 ,3,7,0, 5,0,1},
-			// create a function that will generate such data
-		},
-		cursor: [2]int{0,0},
-		
-	})
+	data := logic.GenerateData()
+	p := tea.NewProgram(Model{Cells: data, cursor: [2]int{0,0}},)
 
 	if _, err := p.Run(); err != nil {
 		fmt.Println(err)
