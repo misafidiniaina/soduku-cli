@@ -7,6 +7,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/misafidiniaina/sudoku/internal/logic"
+	"github.com/misafidiniaina/sudoku/internal/ui"
 )
 
 
@@ -23,6 +24,8 @@ type Model struct {
 func (m Model) Init() tea.Cmd {
 	return  nil
 }
+
+
 
 
 
@@ -76,16 +79,17 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 
 func (m Model) View() string {
-	// var gameTable string
+	var gameTable string
 
-	headerStyle := lipgloss.NewStyle().
+	welcomeStyle := lipgloss.NewStyle().
 		Bold(true).
 		Foreground(lipgloss.Color("#ff0000")).
-		Border(lipgloss.ThickBorder())
+		Border(lipgloss.NormalBorder())
 
 	footerStyle := lipgloss.NewStyle().
 		Bold(true).
-		Foreground(lipgloss.Color("#00ff00"))
+		Foreground(lipgloss.Color("#00ff00")).
+		Border(lipgloss.NormalBorder())
 
 
 	bigblockStyle := lipgloss.NewStyle().
@@ -96,26 +100,37 @@ func (m Model) View() string {
 		Foreground(lipgloss.Color("#000")).
 		Bold(true)
 
-	
 
-	header := headerStyle.Render("salut mes loulous")
-	footer := footerStyle.Render("this is the footer")
-	
-
-	result := lipgloss.JoinHorizontal(
+	header := lipgloss.JoinHorizontal(
 		lipgloss.Center,
-		footer,
-		header,
+		welcomeStyle.Render("Welcome to our soduku game"),
+		footerStyle.Render("this is the footer"),
 	)
+	
+	
+
+	
+	for i := 0; i < 9; i++ {
+		gameTable = gameTable + ui.Line(m.Cells[i]) +"\n"
+	}
+
+
+	
 
 	finalresult := lipgloss.JoinVertical(
 		lipgloss.Left,
-		result,
+		header,
+		gameTable,
 		bigblockStyle.Render("salut"),
+		
 		"\n\n",
 	)
 
+	wrapperStyle := lipgloss.NewStyle().
+		Border(lipgloss.NormalBorder())
+
 	
+	wrapper := wrapperStyle.Render(finalresult) + "\n\n"
 
 
 
@@ -181,7 +196,7 @@ func (m Model) View() string {
 	// gameTable = gameTable + "\n----- ----- -----   ----- ----- -----   ----- ----- ----- \n\n"
 	// gameTable = gameTable + "The cursor position is in: " + fmt.Sprint(m.cursor)
 	// return fmt.Sprintf("%v",gameTable)
-	return finalresult
+	return wrapper
 }
 
 
