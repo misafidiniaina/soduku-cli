@@ -11,6 +11,7 @@ var(
 	Success   = lipgloss.Color("#04B575")
 	Warning   = lipgloss.Color("#F2A900")
 	Muted     = lipgloss.Color("#626262")
+	Command     = lipgloss.Color("#87CEEB")
 )
 
 
@@ -42,13 +43,17 @@ var(
 		Bold(true)
 
 	WrapperStyle = lipgloss.NewStyle().
-		Border(lipgloss.NormalBorder())
+		MarginLeft(5).
+		MarginTop(1)
 
 	HeadItemStyle = lipgloss.NewStyle().
-		Width(20)
+		Width(18)
 
 	HeadTextStyle = lipgloss.NewStyle().
 		Bold(true).
 		Foreground(lipgloss.Color(Success))
 
+
+	CmdStyle = lipgloss.NewStyle().
+		Foreground(lipgloss.Color(Command))
 )

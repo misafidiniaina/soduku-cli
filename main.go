@@ -82,13 +82,12 @@ func (m Model) View() string {
 
 	GameView := lipgloss.JoinVertical(
 		lipgloss.Left,
+		ui.GameHeader(125, 2, "12:23"),
 		ui.GameBoard(m.Cells),
-		ui.BigblockStyle.Render("salut"),
-		
-		"\n\n",
+		ui.CommandHelper(),
 	)
 
-	wrapper := ui.WrapperStyle.Render(GameView) + "\n\n"
+	wrapper := ui.WrapperStyle.Render(GameView) + "\n"
 	return wrapper
 }
 

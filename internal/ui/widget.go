@@ -27,4 +27,3 @@ func Line(RowData [9]int) string  {
 	)
 	return line
 }
-
