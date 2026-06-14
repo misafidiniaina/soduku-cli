@@ -12,57 +12,22 @@ var(
 	Warning   = lipgloss.Color("#F2A900")
 	Muted     = lipgloss.Color("#a1a1a1")
 	Command   = lipgloss.Color("#87CEEB")
-	Editable	  = lipgloss.Color("#4b69ff")
+	Editable  = lipgloss.Color("#5f7aff")
+	Fixed 	  = lipgloss.Color("#ffffff")
 )
 
 
 var(
-	NoEditableCellsStyle = lipgloss.NewStyle().
+
+	// cell base style
+	BaseCell = lipgloss.NewStyle().
 		Border(lipgloss.NormalBorder()).
-		BorderForeground(Muted).
 		Align(lipgloss.Center).
 		PaddingLeft(1).
 		PaddingRight(1).
-		MarginRight(1).
-		Bold(true)
+		MarginRight(1)
 
-	NoEditableSelectedCellStyle = NoEditableCellsStyle.
-		Border(lipgloss.DoubleBorder()).
-		BorderForeground(Secondary)
-	
-	EditableCellStyle = lipgloss.NewStyle().
-		Border(lipgloss.NormalBorder()).
-		BorderForeground(Muted).
-		Align(lipgloss.Center).
-		PaddingLeft(1).
-		PaddingRight(1).
-		MarginRight(1).
-		Foreground(Editable)
-	
-	EditableSelectedCellStyle = EditableCellStyle.
-		Border(lipgloss.DoubleBorder()).
-		BorderForeground(Secondary)
-		
-
-	WelcomeStyle = lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("#ff0000")).
-		Border(lipgloss.NormalBorder())
-
-	FooterStyle = lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("#00ff00")).
-		Border(lipgloss.NormalBorder())
-
-
-	BigblockStyle = lipgloss.NewStyle().
-		Width(60).
-		Border(lipgloss.NormalBorder()).
-		BorderBackground(lipgloss.Color("#0dfsdf")).
-		Background(lipgloss.Color("62")).
-		Foreground(lipgloss.Color("#000")).
-		Bold(true)
-
+	// same value as cursor selected
 	WrapperStyle = lipgloss.NewStyle().
 		MarginLeft(5).
 		MarginTop(1)
@@ -78,3 +43,21 @@ var(
 	CmdStyle = lipgloss.NewStyle().
 		Foreground(lipgloss.Color(Command))
 )
+
+
+func CellStyle(cursorSelected, editable bool) lipgloss.Style {
+	style := BaseCell
+
+	if cursorSelected {
+		style = style.Border(lipgloss.DoubleBorder()).BorderForeground(Secondary)
+	}
+
+
+	if editable {
+		style = style.Foreground(Editable).Bold(false)
+	}else{
+		style = style.Foreground(Fixed).Bold(true)
+	}
+
+	return style
+}
