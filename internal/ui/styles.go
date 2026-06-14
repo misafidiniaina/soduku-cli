@@ -45,11 +45,19 @@ var(
 )
 
 
-func CellStyle(cursorSelected, editable bool) lipgloss.Style {
+func CellStyle(cursorSelected, editable, inSameCol_L, sameValue bool) lipgloss.Style {
 	style := BaseCell
 
-	if cursorSelected {
-		style = style.Border(lipgloss.DoubleBorder()).BorderForeground(Secondary)
+	if inSameCol_L {
+		style = style.BorderForeground(Fixed)
+	}else{
+		style = style.BorderForeground(Muted)
+	}
+
+	if sameValue {
+		style = style.Background(nil)
+	}else{
+		style = style.Background(nil)
 	}
 
 
@@ -57,6 +65,12 @@ func CellStyle(cursorSelected, editable bool) lipgloss.Style {
 		style = style.Foreground(Editable).Bold(false)
 	}else{
 		style = style.Foreground(Fixed).Bold(true)
+	}
+
+	
+	
+	if cursorSelected {
+		style = style.Border(lipgloss.DoubleBorder()).BorderForeground(Secondary)
 	}
 
 	return style
