@@ -25,7 +25,7 @@ func GameHeader(score int,error int, time string) string{
 	var result string
 
 	scoreItem := HeadTextStyle.Render("Score: ") + fmt.Sprint(score)
-	errorItem := HeadTextStyle.Render("   Error: ") + fmt.Sprint(error)
+	errorItem := HeadTextStyle.Render("   Mistakes: ") + fmt.Sprint(error)
 	timeItem := HeadTextStyle.Render("  Time: ") + time
 
 

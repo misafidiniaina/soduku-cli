@@ -45,7 +45,7 @@ var(
 )
 
 
-func CellStyle(cursorSelected, editable, inSameCol_L, sameValue bool) lipgloss.Style {
+func CellStyle(cursorSelected, editable, inSameCol_L, sameValue, mistake, isTheMistakeCell bool) lipgloss.Style {
 	style := BaseCell
 
 	if inSameCol_L {
@@ -54,15 +54,15 @@ func CellStyle(cursorSelected, editable, inSameCol_L, sameValue bool) lipgloss.S
 		style = style.BorderForeground(Muted)
 	}
 
-	if sameValue {
+	
+	if sameValue && !mistake {
 		style = style.Background(Warning)
-	}else{
-		style = style.Background(nil)
 	}
-
 
 	if editable {
 		style = style.Foreground(Editable).Bold(false)
+	}else if isTheMistakeCell{
+		style = style.Foreground(Secondary).Bold(true)
 	}else{
 		style = style.Foreground(Fixed).Bold(true)
 	}
