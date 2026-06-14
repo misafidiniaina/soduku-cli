@@ -66,6 +66,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		default:
 			if len(key) == 1 && key[0] >= '1' && key[0] <= '9' && logic.IsEditable(m.cursor){
+				// if the user input is a mistake return a negatif value (easy to track)
 				if logic.IsNotValid(j, i, int(key[0]-'0')) {
 				m.Cells[j][i] = -int(key[0] - '0')  // negative = mistake
 				m.Mistake++

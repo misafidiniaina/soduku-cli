@@ -12,6 +12,7 @@ func GameBoard(Data [9][9]int, cursor [2]int) string {
     cursorRaw := Data[cursor[1]][cursor[0]]
     cursorIsMistake := cursorRaw < 0
 
+	
     var cursorValue int
     if !cursorIsMistake {
         cursorValue = logic.GetValueInCursor(Data, cursor)

@@ -48,6 +48,9 @@ var(
 func CellStyle(cursorSelected, editable, inSameCol_L, sameValue, isMistake bool) lipgloss.Style {
     style := BaseCell
 
+	// The key thing here is to make a condition about same styling purpose (ex: condition for border color)
+	// if the same topic is changed in different the last one will be applied (ex here: the borderforeground is applied if the condition true)
+
     if inSameCol_L {
         style = style.BorderForeground(Fixed)
     } else {
