@@ -12,7 +12,7 @@ var(
 	Warning   = lipgloss.Color("#F2A900")
 	Muted     = lipgloss.Color("#a1a1a1")
 	Command   = lipgloss.Color("#87CEEB")
-	Initial	  = lipgloss.Color("#4b69ff")
+	Editable	  = lipgloss.Color("#4b69ff")
 )
 
 
@@ -36,7 +36,8 @@ var(
 		Align(lipgloss.Center).
 		PaddingLeft(1).
 		PaddingRight(1).
-		MarginRight(1)
+		MarginRight(1).
+		Foreground(Editable)
 	
 	EditableSelectedCellStyle = EditableCellStyle.
 		Border(lipgloss.DoubleBorder()).

@@ -11,9 +11,11 @@ import (
 
 func Line(rowData [9]int, cursor [2]int, line int) string {
 	var cells []string
+	
 
 	for i, v := range rowData {
 		var value string
+		cellsPostion := [2]int{i, line}
 
 		// handling if cell is empty or not
 		if v == 0 {
@@ -25,13 +27,14 @@ func Line(rowData [9]int, cursor [2]int, line int) string {
 		// cursor and editable styling handling
 		
 		if cursor[0] == i && cursor[1] == line {
-			if logic.IsEditable(cursor) {
+			// check the current cell postion instead of the cursor (cell position is a for line rendering)
+			if logic.IsEditable(cellsPostion) {
 				cells = append(cells, EditableSelectedCellStyle.Render(value))
 			}else{
 				cells = append(cells, NoEditableSelectedCellStyle.Render(value))
 			}
 		}else{
-			if logic.IsEditable(cursor) {
+			if logic.IsEditable(cellsPostion) {
 				cells = append(cells, EditableCellStyle.Render(value))
 			}else{
 				cells = append(cells, NoEditableCellsStyle.Render(value))
