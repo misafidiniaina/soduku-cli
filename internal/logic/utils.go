@@ -45,6 +45,11 @@ func IsEditable(postion [2]int) bool{
 	return GenerateData()[postion[1]][postion[0]] == 0
 }
 
-func GetValueInCursor(Data [9][9]int, cursor [2]int) int{
-	return Data[cursor[1]][cursor[0]]
+// In logic package
+func GetValueInCursor(data [9][9]int, cursor [2]int) int {
+    v := data[cursor[1]][cursor[0]]
+    if v < 0 {
+        return -v
+    }
+    return v
 }

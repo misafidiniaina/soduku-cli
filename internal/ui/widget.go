@@ -10,50 +10,40 @@ import (
 
 
 func Line(rowData [9]int, cursor [2]int, line int, cursorValue int) string {
-	var cells []string
-	var cursorSelected, editable, sameColLine, sameValue, mistake, isTheMistakeCell bool
-	var mistakeIndex int
-	for i := range len(rowData) {
-		if rowData[i] > 9 {
-			mistake = true
-			mistakeIndex = i
-			break
-		}
-		mistake = false
-	}
-	for i, v := range rowData {
-		var value string
-		cellsPostion := [2]int{i, line}
-		cursorSelected = cursor[0] == i && cursor[1] == line
-		editable = logic.IsEditable(cellsPostion)
-		sameColLine = cursor[0] == i || cursor[1] == line
-		sameValue = v == cursorValue && v != 0 
+    var cells []string
 
+    for i, v := range rowData {
+        isMistake := v < 0
+        displayValue := v
+        if isMistake {
+            displayValue = -v
+        }
 
+        var value string
+        if v == 0 {
+            value = " "
+        } else {
+            value = fmt.Sprint(displayValue)
+        }
 
-		// handling if cell is empty or not
-		if v == 0 {
-			value = " "
-		}else if logic.IsNotValid(line, i, v) {
-			value = fmt.Sprint(v - 207)
-		}else{
-			value = fmt.Sprint(v)
-		}
+        cellPosition := [2]int{i, line}
+        cursorSelected := cursor[0] == i && cursor[1] == line
+        editable := logic.IsEditable(cellPosition)
+        sameColLine := cursor[0] == i || cursor[1] == line
+        
+        // normalize both sides before comparing
+        absV := v
+        if absV < 0 { absV = -absV }
+        absCursor := cursorValue
+        if absCursor < 0 { absCursor = -absCursor }
+        sameValue := absV == absCursor && absCursor != 0
 
-		
+        cells = append(cells, CellStyle(cursorSelected, editable, sameColLine, sameValue, isMistake).Render(value))
 
-		// cursor and editable styling handling
-		if i == mistakeIndex {
-			cells = append(cells, CellStyle(cursorSelected, editable, sameColLine, sameValue, mistake, isTheMistakeCell).Render(value))
-		}else{
-			cells = append(cells, CellStyle(cursorSelected, editable, sameColLine, sameValue, mistake, isTheMistakeCell).Render(value))
-		}
-		
-		// Add separator after every 3 cells except the last block
-		if (i+1)%3 == 0 && i != 8 {
-			cells = append(cells, "  ")
-		}
-	}
+        if (i+1)%3 == 0 && i != 8 {
+            cells = append(cells, "  ")
+        }
+    }
 
-	return lipgloss.JoinHorizontal(lipgloss.Center, cells...)
+    return lipgloss.JoinHorizontal(lipgloss.Center, cells...)
 }

@@ -59,21 +59,19 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "right":
 			m.cursor[0] = logic.CursorHandling("right", m.cursor[0])
 
-		case "backspace":
+		case "backspace", "delete":
 			m.Cells[j][i] = 0
 		
-		case "delete":
-			m.Cells[j][i] = 0
 		
 
 		default:
 			if len(key) == 1 && key[0] >= '1' && key[0] <= '9' && logic.IsEditable(m.cursor){
-				if logic.IsNotValid(j, i, int(key[0] -'0')) {
-					m.Cells[j][i] = int(key[0] - 'a')
-					m.Mistake++
-				}else{
-					m.Cells[j][i] = int(key[0] - '0')
-				}
+				if logic.IsNotValid(j, i, int(key[0]-'0')) {
+				m.Cells[j][i] = -int(key[0] - '0')  // negative = mistake
+				m.Mistake++
+			} else {
+				m.Cells[j][i] = int(key[0] - '0')
+			}
 				
 			}
 			
@@ -89,7 +87,7 @@ func (m Model) View() string {
 
 	GameView := lipgloss.JoinVertical(
 		lipgloss.Left,
-		ui.GameHeader(125, 2, "12:23"),
+		ui.GameHeader(125, m.Mistake, "12:23"),
 		ui.GameBoard(m.Cells, m.cursor),
 		ui.CommandHelper(),
 	)

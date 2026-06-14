@@ -45,33 +45,30 @@ var(
 )
 
 
-func CellStyle(cursorSelected, editable, inSameCol_L, sameValue, mistake, isTheMistakeCell bool) lipgloss.Style {
-	style := BaseCell
+func CellStyle(cursorSelected, editable, inSameCol_L, sameValue, isMistake bool) lipgloss.Style {
+    style := BaseCell
 
-	if inSameCol_L {
-		style = style.BorderForeground(Fixed)
-	}else{
-		style = style.BorderForeground(Muted)
-	}
+    if inSameCol_L {
+        style = style.BorderForeground(Fixed)
+    } else {
+        style = style.BorderForeground(Muted)
+    }
 
-	
-	if sameValue && !mistake {
-		style = style.Background(Warning)
-	}
+    if sameValue && !isMistake {
+        style = style.Background(Warning)
+    }
 
-	if editable {
-		style = style.Foreground(Editable).Bold(false)
-	}else if isTheMistakeCell{
-		style = style.Foreground(Secondary).Bold(true)
-	}else{
-		style = style.Foreground(Fixed).Bold(true)
-	}
+    if isMistake {
+        style = style.Foreground(Secondary).Bold(true)
+    } else if editable {
+        style = style.Foreground(Editable).Bold(false)
+    } else {
+        style = style.Foreground(Fixed).Bold(true)
+    }
 
-	
-	
-	if cursorSelected {
-		style = style.Border(lipgloss.DoubleBorder()).BorderForeground(Secondary)
-	}
+    if cursorSelected {
+        style = style.Border(lipgloss.DoubleBorder()).BorderForeground(Secondary)
+    }
 
-	return style
+    return style
 }
