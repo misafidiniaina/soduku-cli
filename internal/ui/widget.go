@@ -9,7 +9,7 @@ import (
 
 
 
-func Line(rowData [9]int, cursor [2]int, line int) string {
+func Line(rowData [9]int, cursor [2]int, line int, cursorValue int) string {
 	var cells []string
 	var cursorSelected, editable, sameColLine, sameValue bool
 	
@@ -20,7 +20,7 @@ func Line(rowData [9]int, cursor [2]int, line int) string {
 		cursorSelected = cursor[0] == i && cursor[1] == line
 		editable = logic.IsEditable(cellsPostion)
 		sameColLine = cursor[0] == i || cursor[1] == line
-		sameValue = rowData[i] == v
+		sameValue = v == cursorValue && v!=0
 
 		// handling if cell is empty or not
 		if v == 0 {

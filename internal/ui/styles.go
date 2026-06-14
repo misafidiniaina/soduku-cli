@@ -55,7 +55,7 @@ func CellStyle(cursorSelected, editable, inSameCol_L, sameValue bool) lipgloss.S
 	}
 
 	if sameValue {
-		style = style.Background(nil)
+		style = style.Background(Warning)
 	}else{
 		style = style.Background(nil)
 	}

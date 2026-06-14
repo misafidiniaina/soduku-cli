@@ -4,15 +4,17 @@ import (
 	"fmt"
 
 	"github.com/charmbracelet/lipgloss"
+	"github.com/misafidiniaina/sudoku/internal/logic"
 )
 
 func GameBoard(Data [9][9]int, cursor [2]int) string{
 	var result string
+	cursorValue := logic.GetValueInCursor(Data, cursor)
 	for i := range 9 {
 		if i == 2 || i == 5 {
-			result = result + Line(Data[i], cursor, i) +"\n\n"
+			result = result + Line(Data[i], cursor, i, cursorValue) +"\n\n"
 		}else{
-			result = result + Line(Data[i], cursor, i) +"\n"
+			result = result + Line(Data[i], cursor, i, cursorValue) +"\n"
 		}
 		
 	}
