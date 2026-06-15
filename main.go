@@ -55,11 +55,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	j := m.cursor[1]
 
 	switch msg := msg.(type) {
+		
 	case TickMsg:
 		if !m.Paused {
         	m.Elapsed += time.Second
 		}
 		return m, tick()
+
 	case tea.KeyMsg:
 
 		key := msg.String()
@@ -134,7 +136,6 @@ func main() {
 
 	data := logic.GenerateData()
 	p := tea.NewProgram(Model{Cells: data, StartTime: time.Now(), Mistake: 0, cursor: [2]int{0,0}}, )
-	fmt.Printf("\r%s", time.Since(time.Now()).Truncate(time.Second))
 
 	if _, err := p.Run(); err != nil {
 		fmt.Println(err)
