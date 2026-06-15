@@ -18,6 +18,8 @@ type Model struct {
 	Cells [9][9]int
 
 	StartTime time.Time
+    Elapsed   time.Duration
+    Paused    bool
 	
 	// player mistake counter
 	Mistake int
@@ -25,7 +27,7 @@ type Model struct {
 	cursor [2]int
 }
 
-
+// a custom struct to represent time trick (a time based command that triggers event at regular intervals)
 type TickMsg time.Time
 
 func tick() tea.Cmd {
@@ -54,6 +56,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case TickMsg:
+		if !m.Paused {
+        	m.Elapsed += time.Second
+		}
 		return m, tick()
 	case tea.KeyMsg:
 
@@ -78,8 +83,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "backspace", "delete":
 			m.Cells[j][i] = 0
-		
-		
+
+		case "p":
+			m.Paused = !m.Paused
+			return m, nil
 		
 
 		default:
@@ -103,11 +110,17 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 
 func (m Model) View() string {
+	var MaingContent string
+	if m.Paused {
+		MaingContent = ui.PausedGameSyle.Render("        GAME PAUSED, \nPress 'p' to resume the game")
+	}else{
+		MaingContent = ui.GameBoard(m.Cells, m.cursor)
+	}
 
 	GameView := lipgloss.JoinVertical(
 		lipgloss.Left,
-		ui.GameHeader(125, m.Mistake, logic.Chrono(m.StartTime)),
-		ui.GameBoard(m.Cells, m.cursor),
+		ui.GameHeader(125, m.Mistake, logic.Chrono(m.Elapsed)),
+		MaingContent,
 		ui.CommandHelper(),
 	)
 

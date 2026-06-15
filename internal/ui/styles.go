@@ -14,6 +14,7 @@ var(
 	Command   = lipgloss.Color("#87CEEB")
 	Editable  = lipgloss.Color("#5f7aff")
 	Fixed 	  = lipgloss.Color("#ffffff")
+	Message	  = lipgloss.Color("62")
 )
 
 
@@ -42,6 +43,13 @@ var(
 
 	CmdStyle = lipgloss.NewStyle().
 		Foreground(lipgloss.Color(Command))
+
+
+
+	PausedGameSyle = lipgloss.NewStyle().
+		Bold(true).
+		Foreground(Message).
+		Padding(14)
 )
 
 

@@ -51,7 +51,7 @@ func GameHeader(score int,error int, time string) string{
 func CommandHelper() string {
 	var result string
 
-	result = "Move:" + CmdStyle.Render(" ↑ ← ↓ → ") +"       Enter number: "+CmdStyle.Render("1-9 ")+"       Clear cell: "+CmdStyle.Render("Backspace/Delete")+"       Quit: "+CmdStyle.Render("q")
+	result = "Move:" + CmdStyle.Render(" ↑ ← ↓ → ") +"       Enter number: "+CmdStyle.Render("1-9 ")+"       Clear cell: "+CmdStyle.Render("Backspace/Delete")+"\nPause/Resume: "+CmdStyle.Render("p")+"      Quit: "+CmdStyle.Render("q")
 	return  result
 
 }
