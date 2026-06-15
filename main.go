@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -15,6 +16,8 @@ type Model struct {
 
 	// Data for the game 
 	Cells [9][9]int
+
+	StartTime time.Time
 	
 	// player mistake counter
 	Mistake int
@@ -23,8 +26,20 @@ type Model struct {
 }
 
 
+type TickMsg time.Time
+
+func tick() tea.Cmd {
+	return tea.Tick(time.Second, func(t time.Time) tea.Msg {
+		return TickMsg(t)
+	})
+}
+
+
 func (m Model) Init() tea.Cmd {
-	return  tea.ClearScreen
+	return tea.Batch(
+		tea.ClearScreen,
+		tick(),
+	)
 }
 
 
@@ -38,6 +53,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	j := m.cursor[1]
 
 	switch msg := msg.(type) {
+	case TickMsg:
+		return m, tick()
 	case tea.KeyMsg:
 
 		key := msg.String()
@@ -61,6 +78,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "backspace", "delete":
 			m.Cells[j][i] = 0
+		
 		
 		
 
@@ -88,7 +106,7 @@ func (m Model) View() string {
 
 	GameView := lipgloss.JoinVertical(
 		lipgloss.Left,
-		ui.GameHeader(125, m.Mistake, "12:23"),
+		ui.GameHeader(125, m.Mistake, logic.Chrono(m.StartTime)),
 		ui.GameBoard(m.Cells, m.cursor),
 		ui.CommandHelper(),
 	)
@@ -102,7 +120,8 @@ func (m Model) View() string {
 func main() {
 
 	data := logic.GenerateData()
-	p := tea.NewProgram(Model{Cells: data, Mistake: 0, cursor: [2]int{0,0}}, )
+	p := tea.NewProgram(Model{Cells: data, StartTime: time.Now(), Mistake: 0, cursor: [2]int{0,0}}, )
+	fmt.Printf("\r%s", time.Since(time.Now()).Truncate(time.Second))
 
 	if _, err := p.Run(); err != nil {
 		fmt.Println(err)
