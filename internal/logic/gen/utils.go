@@ -23,3 +23,28 @@ func MissingValue(group [9]int) []int{
 
 	return result
 }
+
+
+// utils fucntion to know 	the case where the cell is
+func WhichTranch(x int, y int) (tranchx int, tranchy int){
+	var valuex int
+	var valuey int
+	
+	if x < 3 {
+		valuex = 0
+	}else if x >= 3 && x < 6{
+		valuex = 3
+	}else {
+		valuex = 6
+	}
+
+	if y < 3 {
+		valuey = 0
+	}else if y >= 3 && y < 6{
+		valuey = 3
+	}else {
+		valuey = 6
+	}
+
+	return valuex,valuey
+}
