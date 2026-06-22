@@ -71,7 +71,7 @@ func IsArrayValid(arrayData [9]int) bool {
 func IsSodukuValid(sodukuData [9][9]int) bool{
 	
 
-	for i := 0; i < 9; i++ {
+	for i := range 9 {
 		if !IsArrayValid(sodukuData[i]) {
 			return false
 		}
@@ -92,7 +92,7 @@ func IsSodukuValid(sodukuData [9][9]int) bool{
 
 	// check 3x3 boxes validation
 	for boxRow := 0; boxRow < 3; boxRow++ {
-		for boxCol := 0; boxCol < 3; boxCol++ {
+		for boxCol := range 3 {
 			var box [9]int
 			index := 0
 
