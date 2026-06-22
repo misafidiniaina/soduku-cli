@@ -50,20 +50,20 @@ func WhichTranch(x int, y int) (tranchx int, tranchy int){
 }
 
 
-func isSodukuValid(sodukuData [9]int) bool{
-	result := true
-	for i := 1; i < 10; i++ {
-		occurenceCounter := 0
-		for j := 0; j < 9; j++ {
-			if sodukuData[j] == i {
-				occurenceCounter++
-			}
-			if occurenceCounter == 2 {
-				result = false
-				break
-			}
+func IsArrayValid(arrayData [9]int) bool {
+	seen := make(map[int]bool)
+
+	for _, value := range arrayData {
+		if value == 0 {
+			continue
 		}
+
+		if seen[value] {
+			return false
+		}
+
+		seen[value] = true
 	}
 
-	return  result
+	return true
 }
