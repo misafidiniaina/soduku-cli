@@ -67,3 +67,48 @@ func IsArrayValid(arrayData [9]int) bool {
 
 	return true
 }
+
+func IsSodukuValid(sodukuData [9][9]int) bool{
+	
+
+	for i := 0; i < 9; i++ {
+		if !IsArrayValid(sodukuData[i]) {
+			return false
+		}
+	}
+
+	// Check columns
+	for i := 0; i < 9; i++ {
+		var column [9]int
+
+		for j := 0; j < 9; j++ {
+			column[j] = sodukuData[j][i]
+		}
+
+		if !IsArrayValid(column) {
+			return false
+		}
+	}
+
+	// check 3x3 boxes validation
+	for boxRow := 0; boxRow < 3; boxRow++ {
+		for boxCol := 0; boxCol < 3; boxCol++ {
+			var box [9]int
+			index := 0
+
+			for i := boxRow * 3; i < boxRow*3+3; i++ {
+				for j := boxCol * 3; j < boxCol*3+3; j++ {
+					box[index] = sodukuData[i][j]
+					index++
+				}
+			}
+
+			if !IsArrayValid(box) {
+				return false
+			}
+		}
+	}
+
+
+	return true
+}
