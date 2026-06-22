@@ -48,3 +48,22 @@ func WhichTranch(x int, y int) (tranchx int, tranchy int){
 
 	return valuex,valuey
 }
+
+
+func isSodukuValid(sodukuData [9]int) bool{
+	result := true
+	for i := 1; i < 10; i++ {
+		occurenceCounter := 0
+		for j := 0; j < 9; j++ {
+			if sodukuData[j] == i {
+				occurenceCounter++
+			}
+			if occurenceCounter == 2 {
+				result = false
+				break
+			}
+		}
+	}
+
+	return  result
+}
