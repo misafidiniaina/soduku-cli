@@ -2,9 +2,9 @@ package gen
 
 import "slices"
 
-func MissingValue(group [9]int) []int{
+func MissingValue(group [9]int) []int {
 	var result []int
-	normal := []int{1,2,3,4,5,6,7,8,9}
+	normal := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
 
 	var PresentValues []int
 	for i := range len(group) {
@@ -24,31 +24,29 @@ func MissingValue(group [9]int) []int{
 	return result
 }
 
-
 // utils fucntion to know 	the case where the cell is
-func WhichTranch(x int, y int) (tranchx int, tranchy int){
+func WhichTranch(x int, y int) (tranchx int, tranchy int) {
 	var valuex int
 	var valuey int
-	
+
 	if x < 3 {
 		valuex = 0
-	}else if x >= 3 && x < 6{
+	} else if x >= 3 && x < 6 {
 		valuex = 3
-	}else {
+	} else {
 		valuex = 6
 	}
 
 	if y < 3 {
 		valuey = 0
-	}else if y >= 3 && y < 6{
+	} else if y >= 3 && y < 6 {
 		valuey = 3
-	}else {
+	} else {
 		valuey = 6
 	}
 
-	return valuex,valuey
+	return valuex, valuey
 }
-
 
 func IsArrayValid(arrayData [9]int) bool {
 	seen := make(map[int]bool)
@@ -56,6 +54,9 @@ func IsArrayValid(arrayData [9]int) bool {
 	for _, value := range arrayData {
 		if value == 0 {
 			continue
+		}
+		if value < 1 || value > 9 {
+			return false
 		}
 
 		if seen[value] {
@@ -68,8 +69,7 @@ func IsArrayValid(arrayData [9]int) bool {
 	return true
 }
 
-func IsSodukuValid(sodukuData [9][9]int) bool{
-	
+func IsSodukuValid(sodukuData [9][9]int) bool {
 
 	for i := range 9 {
 		if !IsArrayValid(sodukuData[i]) {
@@ -108,7 +108,6 @@ func IsSodukuValid(sodukuData [9][9]int) bool{
 			}
 		}
 	}
-
 
 	return true
 }
