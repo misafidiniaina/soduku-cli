@@ -213,6 +213,9 @@ func (m Model) View() string {
 		if boardWidth < 1 {
 			boardWidth = 80
 		}
+		if boardWidth > 117 {
+			boardWidth = 117
+		}
 		MaingContent = ui.GameBoard(m.Cells, m.Puzzle, m.cursor, boardWidth)
 	}
 
