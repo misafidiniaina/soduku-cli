@@ -26,6 +26,22 @@ go run .
 
 When the game starts, choose a level with the arrow keys or `1`–`6`, then press `Enter`.
 
+## Install as a CLI
+
+Install the latest version directly with Go:
+
+```bash
+go install github.com/misafidiniaina/sudoku@latest
+```
+
+Go installs the `sudoku` executable in `GOBIN` when it is set, or otherwise in `GOPATH/bin`. Make sure that directory is in your `PATH`, then start the game from anywhere:
+
+```bash
+sudoku
+```
+
+To install a specific version or commit, replace `@latest` with the desired version, for example `@v1.0.0`.
+
 ## Controls
 
 | Key | Action |
