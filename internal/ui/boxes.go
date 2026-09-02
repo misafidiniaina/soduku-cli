@@ -2,7 +2,6 @@ package ui
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/misafidiniaina/sudoku/internal/logic"
@@ -48,17 +47,21 @@ func GameBoard(Data [9][9]int, puzzle [9][9]int, cursor [2]int, width int) strin
 		cursorValue = 0 // disables sameValue highlighting for all cells
 	}
 
+	boardWidth := 0
 	for i := range 9 {
 		line := Line(Data[i], puzzle, cursor, i, cursorValue)
-		padding := (width - lipgloss.Width(line)) / 2
-		if padding > 0 {
-			line = strings.Repeat(" ", padding) + line
+		if lipgloss.Width(line) > boardWidth {
+			boardWidth = lipgloss.Width(line)
 		}
 		if i == 2 || i == 5 {
 			result = result + line + "\n\n"
 		} else {
 			result = result + line + "\n"
 		}
+	}
+	padding := (width - boardWidth) / 2
+	if padding > 0 {
+		result = lipgloss.NewStyle().MarginLeft(padding).Render(result)
 	}
 	return result
 }
@@ -83,9 +86,10 @@ func GameHeader(score int, level string, error int, time string) string {
 }
 
 func CommandHelper() string {
-	var result string
-
-	result = "Move:" + CmdStyle.Render(" ↑ ← ↓ → ") + "       Enter number: " + CmdStyle.Render("1-9 ") + "       Clear cell: " + CmdStyle.Render("Backspace/Delete") + "\nPause/Resume: " + CmdStyle.Render("p") + "      Restart: " + CmdStyle.Render("r") + "      Quit: " + CmdStyle.Render("q")
-	return result
-
+	item := func(label, key string) string { return CommandItemStyle.Render(label + CmdStyle.Render(key)) }
+	return lipgloss.JoinHorizontal(lipgloss.Top,
+		item("Move: ", "↑ ← ↓ →"), item("Enter number: ", "1-9"), item("Clear cell: ", "Backspace/Delete"),
+	) + "\n" + lipgloss.JoinHorizontal(lipgloss.Top,
+		item("Pause/Resume: ", "p"), item("Restart: ", "r"), item("Quit: ", "q"),
+	)
 }
