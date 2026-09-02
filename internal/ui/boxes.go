@@ -22,6 +22,19 @@ func LevelSelector(levels []gen.Difficulty, selected int) string {
 	return items + CmdStyle.Render("Use arrows or 1–6, then press Enter")
 }
 
+func RestartSelector(selected int) string {
+	options := []string{"Replay existing board", "Generate a new board", "Choose another level"}
+	result := LevelTitleStyle.Render("RESTART GAME") + "\n\n"
+	for i, option := range options {
+		prefix, style := "  ", LevelOptionStyle
+		if i == selected {
+			prefix, style = "> ", LevelSelectedStyle
+		}
+		result += style.Render(prefix+option) + "\n"
+	}
+	return result + "\n" + CmdStyle.Render("Use arrows, then press Enter")
+}
+
 func GameBoard(Data [9][9]int, puzzle [9][9]int, cursor [2]int) string {
 	var result string
 	cursorRaw := Data[cursor[1]][cursor[0]]
@@ -48,7 +61,7 @@ func GameHeader(score int, level string, error int, time string) string {
 	var result string
 
 	scoreItem := HeadTextStyle.Render("Score: ") + HeaderValueStyle.Render(fmt.Sprint(score)) + "\n"
-	errorItem := HeadTextStyle.Render("Mistakes: ") + HeaderValueStyle.Render(fmt.Sprint(error)) + "\n"
+	errorItem := HeadTextStyle.Render("Mistakes: ") + HeaderValueStyle.Render(fmt.Sprintf("%d/3", error)) + "\n"
 	timeItem := HeadTextStyle.Render("Time: ") + HeaderValueStyle.Render(time) + "\n"
 	levelItem := HeadTextStyle.Render("Level: ") + HeaderValueStyle.Render(level) + "\n"
 

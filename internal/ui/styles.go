@@ -55,6 +55,7 @@ var (
 			Foreground(Secondary).
 			Align(lipgloss.Center).
 			Padding(8)
+	WinStyle           = GameOverStyle.Copy().Foreground(Success)
 	LevelTitleStyle    = lipgloss.NewStyle().Bold(true).Foreground(Primary)
 	LevelSelectedStyle = lipgloss.NewStyle().Bold(true).Foreground(Warning)
 	LevelOptionStyle   = lipgloss.NewStyle().Foreground(Fixed)

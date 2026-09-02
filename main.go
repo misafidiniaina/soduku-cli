@@ -28,6 +28,9 @@ type Model struct {
 	// player mistake counter
 	Mistake        int
 	GameOver       bool
+	Won            bool
+	Restarting     bool
+	RestartChoice  int
 	SelectingLevel bool
 	LevelIndex     int
 	Width          int
@@ -69,14 +72,49 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, tick()
 
 	case tea.KeyMsg:
+		key := msg.String()
+		if m.Restarting {
+			switch key {
+			case "up", "left":
+				m.RestartChoice = (m.RestartChoice + 2) % 3
+			case "down", "right":
+				m.RestartChoice = (m.RestartChoice + 1) % 3
+			case "enter":
+				switch m.RestartChoice {
+				case 0:
+					m.Cells, m.Mistake, m.Elapsed, m.Restarting, m.GameOver, m.Won = m.Puzzle, 0, 0, false, false, false
+				case 1:
+					m.Puzzle, m.Solution = gen.PuzzleGenAt(difficulties[m.LevelIndex])
+					m.Cells, m.Mistake, m.Elapsed, m.Restarting, m.GameOver, m.Won = m.Puzzle, 0, 0, false, false, false
+				case 2:
+					m.SelectingLevel, m.Restarting = true, false
+				}
+			case "q", "ctrl+c":
+				return m, tea.Quit
+			}
+			return m, nil
+		}
 		if m.GameOver {
-			if msg.String() == "q" || msg.String() == "ctrl+c" {
+			if key == "r" {
+				m.Restarting = true
+				return m, nil
+			}
+			if key == "q" || key == "ctrl+c" {
+				return m, tea.Quit
+			}
+			return m, nil
+		}
+		if m.Won {
+			if key == "r" {
+				m.Restarting = true
+				return m, nil
+			}
+			if key == "q" || key == "ctrl+c" {
 				return m, tea.Quit
 			}
 			return m, nil
 		}
 
-		key := msg.String()
 		if m.SelectingLevel {
 			switch key {
 			case "up", "left":
@@ -89,7 +127,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.Puzzle, m.Solution = gen.PuzzleGenAt(difficulties[m.LevelIndex])
 				m.Cells = m.Puzzle
 				m.StartTime = time.Now()
-				m.SelectingLevel = false
+				m.SelectingLevel, m.GameOver, m.Won = false, false, false
 			}
 			return m, nil
 		}
@@ -124,11 +162,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if m.Solution[j][i] != int(key[0]-'0') {
 					m.Cells[j][i] = -int(key[0] - '0') // negative = mistake
 					m.Mistake++
-					if m.Mistake > 3 {
+					if m.Mistake >= 3 {
 						m.GameOver = true
 					}
 				} else {
 					m.Cells[j][i] = int(key[0] - '0')
+					m.Won = gameWon(m.Cells, m.Puzzle, m.Solution)
 				}
 
 			}
@@ -140,14 +179,31 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
+func gameWon(cells, puzzle, solution [9][9]int) bool {
+	for row := range 9 {
+		for column := range 9 {
+			if puzzle[row][column] == 0 && cells[row][column] != solution[row][column] {
+				return false
+			}
+		}
+	}
+	return true
+}
+
 func (m Model) View() string {
 	if m.SelectingLevel {
 		content := ui.WrapperStyle.Render(ui.LevelSelector(difficulties, m.LevelIndex))
 		return lipgloss.Place(m.Width, m.Height, lipgloss.Center, lipgloss.Center, content)
 	}
+	if m.Restarting {
+		content := ui.WrapperStyle.Render(ui.RestartSelector(m.RestartChoice))
+		return lipgloss.Place(m.Width, m.Height, lipgloss.Center, lipgloss.Center, content)
+	}
 	var MaingContent string
 	if m.GameOver {
-		MaingContent = ui.GameOverStyle.Render("GAME OVER\nYou made more than 3 mistakes\nPress 'q' to quit")
+		MaingContent = ui.GameOverStyle.Render("GAME OVER\nYou made 3 mistakes\nPress 'r' to restart or 'q' to quit")
+	} else if m.Won {
+		MaingContent = ui.WinStyle.Render("YOU WIN!\nPress 'r' to play again or 'q' to quit")
 	} else if m.Paused {
 		MaingContent = ui.PausedGameSyle.Render("        GAME PAUSED, \nPress 'p' to resume the game")
 	} else {
