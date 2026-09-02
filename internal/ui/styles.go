@@ -28,7 +28,6 @@ var (
 
 	// same value as cursor selected
 	WrapperStyle = lipgloss.NewStyle().
-			MarginLeft(5).
 			MarginTop(1).
 			Padding(1, 2).
 			Border(lipgloss.RoundedBorder()).
