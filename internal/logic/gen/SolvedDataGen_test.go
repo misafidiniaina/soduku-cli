@@ -23,7 +23,7 @@ func TestPuzzleGen(t *testing.T) {
 			}
 		}
 	}
-	if empty != 45 {
-		t.Fatalf("generated puzzle has %d empty cells, want 45", empty)
+	if empty != Medium.EmptyCells() {
+		t.Fatalf("generated puzzle has %d empty cells, want %d", empty, Medium.EmptyCells())
 	}
 }

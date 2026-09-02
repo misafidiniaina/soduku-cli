@@ -99,11 +99,15 @@ func SolvedDataGen() [9][9]int {
 
 // PuzzleGen creates a playable puzzle and returns the solution used to check it.
 func PuzzleGen() (puzzle [9][9]int, solution [9][9]int) {
+	return PuzzleGenAt(Medium)
+}
+
+func PuzzleGenAt(difficulty Difficulty) (puzzle [9][9]int, solution [9][9]int) {
 	solution = SolvedDataGen()
 	puzzle = solution
 
 	removed := 0
-	for removed < 45 {
+	for removed < difficulty.EmptyCells() {
 		row := rand.IntN(9)
 		column := rand.IntN(9)
 		if puzzle[row][column] == 0 {
