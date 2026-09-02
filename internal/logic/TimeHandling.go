@@ -1,11 +1,9 @@
 package logic
 
-
 import (
-	"time"
 	"fmt"
+	"time"
 )
-
 
 func StartTimer() {
 	time.Since(time.Now()).Truncate(time.Second)
@@ -28,11 +26,11 @@ func StartTimer() {
 
 func Chrono(d time.Duration) string {
 
-	hours 	:= int(d.Hours())
-    minutes := int(d.Minutes())
-    seconds := int(d.Seconds()) % 60
+	hours := int(d.Hours())
+	minutes := int(d.Minutes()) % 60
+	seconds := int(d.Seconds()) % 60
 
-    if hours > 0 {
+	if hours > 0 {
 		return fmt.Sprintf("%02d:%02d:%02d", hours, minutes, seconds)
 	}
 
