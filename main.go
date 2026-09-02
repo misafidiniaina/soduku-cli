@@ -196,16 +196,12 @@ func gameWon(cells, puzzle, solution [9][9]int) bool {
 }
 
 func (m Model) View() string {
-	contentWidth := m.Width - 4
-	if contentWidth < 1 {
-		contentWidth = 1
-	}
 	if m.SelectingLevel {
-		content := ui.WrapperStyle.Width(contentWidth).Align(lipgloss.Center).Render(ui.LevelSelector(difficulties, m.LevelIndex))
+		content := ui.WrapperStyle.Render(ui.LevelSelector(difficulties, m.LevelIndex))
 		return lipgloss.Place(m.Width, m.Height, lipgloss.Center, lipgloss.Center, content)
 	}
 	if m.Restarting {
-		content := ui.WrapperStyle.Width(contentWidth).Align(lipgloss.Center).Render(ui.RestartSelector(m.RestartChoice))
+		content := ui.WrapperStyle.Render(ui.RestartSelector(m.RestartChoice))
 		return lipgloss.Place(m.Width, m.Height, lipgloss.Center, lipgloss.Center, content)
 	}
 	var MaingContent string
@@ -226,7 +222,7 @@ func (m Model) View() string {
 		ui.CommandHelper(),
 	)
 
-	wrapper := ui.WrapperStyle.Width(contentWidth).Align(lipgloss.Center).Render(GameView)
+	wrapper := ui.WrapperStyle.Render(GameView)
 	return lipgloss.Place(m.Width, m.Height, lipgloss.Center, lipgloss.Center, wrapper)
 }
 
