@@ -216,7 +216,7 @@ func (m Model) View() string {
 	} else if m.Paused {
 		MaingContent = ui.PausedGameSyle.Render("        GAME PAUSED, \nPress 'p' to resume the game")
 	} else {
-		MaingContent = ui.GameBoard(m.Cells, m.Puzzle, m.cursor)
+		MaingContent = ui.GameBoard(m.Cells, m.Puzzle, m.cursor, contentWidth)
 	}
 
 	GameView := lipgloss.JoinVertical(
