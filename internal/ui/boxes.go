@@ -88,7 +88,7 @@ func GameHeader(score int, level string, error int, time string) string {
 func CommandHelper() string {
 	item := func(label, key string) string { return CommandItemStyle.Render(label + CmdStyle.Render(key)) }
 	return lipgloss.JoinHorizontal(lipgloss.Top,
-		item("Move: ", "↑ ← ↓ →"), item("Enter number: ", "1-9"), item("Clear cell: ", "Backspace/Delete"),
+		item("Move: ", "↑ ← ↓ →"), item("Enter number: ", "1-9"), item("Clear cell:", "Backspace/Delete"),
 	) + "\n" + lipgloss.JoinHorizontal(lipgloss.Top,
 		item("Pause/Resume: ", "p"), item("Restart: ", "r"), item("Quit: ", "q"),
 	)

@@ -45,7 +45,7 @@ var (
 
 	CmdStyle = lipgloss.NewStyle().
 			Foreground(lipgloss.Color(Command))
-	CommandItemStyle = lipgloss.NewStyle().Width(28)
+	CommandItemStyle = lipgloss.NewStyle().Width(27)
 
 	PausedGameSyle = lipgloss.NewStyle().
 			Bold(true).
