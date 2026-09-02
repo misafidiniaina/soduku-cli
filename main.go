@@ -31,6 +31,8 @@ type Model struct {
 	Won            bool
 	Restarting     bool
 	RestartChoice  int
+	Width          int
+	Height         int
 	SelectingLevel bool
 	LevelIndex     int
 	// Postion of the cursor index 0 represting the x axes and index 1 for the y axes
@@ -59,6 +61,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	j := m.cursor[1]
 
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.Width, m.Height = msg.Width, msg.Height
 
 	case TickMsg:
 		if !m.Paused {
@@ -205,7 +209,11 @@ func (m Model) View() string {
 	} else if m.Paused {
 		MaingContent = ui.PausedGameSyle.Render("        GAME PAUSED, \nPress 'p' to resume the game")
 	} else {
-		MaingContent = ui.GameBoard(m.Cells, m.Puzzle, m.cursor)
+		boardWidth := m.Width
+		if boardWidth < 1 {
+			boardWidth = 80
+		}
+		MaingContent = ui.GameBoard(m.Cells, m.Puzzle, m.cursor, boardWidth)
 	}
 
 	GameView := lipgloss.JoinVertical(
@@ -220,7 +228,7 @@ func (m Model) View() string {
 }
 
 func main() {
-	p := tea.NewProgram(Model{SelectingLevel: true, LevelIndex: 1})
+	p := tea.NewProgram(Model{SelectingLevel: true, LevelIndex: 1, Width: 80, Height: 24})
 
 	if _, err := p.Run(); err != nil {
 		fmt.Println(err)

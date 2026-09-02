@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/misafidiniaina/sudoku/internal/logic"
@@ -35,7 +36,7 @@ func RestartSelector(selected int) string {
 	return result + "\n" + CmdStyle.Render("Use arrows, then press Enter")
 }
 
-func GameBoard(Data [9][9]int, puzzle [9][9]int, cursor [2]int) string {
+func GameBoard(Data [9][9]int, puzzle [9][9]int, cursor [2]int, width int) string {
 	var result string
 	cursorRaw := Data[cursor[1]][cursor[0]]
 	cursorIsMistake := cursorRaw < 0
@@ -48,10 +49,15 @@ func GameBoard(Data [9][9]int, puzzle [9][9]int, cursor [2]int) string {
 	}
 
 	for i := range 9 {
+		line := Line(Data[i], puzzle, cursor, i, cursorValue)
+		padding := (width - lipgloss.Width(line)) / 2
+		if padding > 0 {
+			line = strings.Repeat(" ", padding) + line
+		}
 		if i == 2 || i == 5 {
-			result = result + Line(Data[i], puzzle, cursor, i, cursorValue) + "\n\n"
+			result = result + line + "\n\n"
 		} else {
-			result = result + Line(Data[i], puzzle, cursor, i, cursorValue) + "\n"
+			result = result + line + "\n"
 		}
 	}
 	return result
@@ -79,7 +85,7 @@ func GameHeader(score int, level string, error int, time string) string {
 func CommandHelper() string {
 	var result string
 
-	result = "Move:" + CmdStyle.Render(" ↑ ← ↓ → ") + "       Enter number: " + CmdStyle.Render("1-9 ") + "       Clear cell: " + CmdStyle.Render("Backspace/Delete") + "\nPause/Resume: " + CmdStyle.Render("p") + "      Quit: " + CmdStyle.Render("q")
+	result = "Move:" + CmdStyle.Render(" ↑ ← ↓ → ") + "       Enter number: " + CmdStyle.Render("1-9 ") + "       Clear cell: " + CmdStyle.Render("Backspace/Delete") + "\nPause/Resume: " + CmdStyle.Render("p") + "      Restart: " + CmdStyle.Render("r") + "      Quit: " + CmdStyle.Render("q")
 	return result
 
 }
