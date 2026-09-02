@@ -137,6 +137,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "q", "ctrl+c":
 			return m, tea.Quit
 
+		case "r":
+			m.Restarting = true
+			m.RestartChoice = 0
+			return m, nil
+
 		case "up":
 			m.cursor[1] = logic.CursorHandling("up", m.cursor[1])
 
