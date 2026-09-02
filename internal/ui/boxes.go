@@ -35,7 +35,7 @@ func RestartSelector(selected int) string {
 	return result + "\n" + CmdStyle.Render("Use arrows, then press Enter")
 }
 
-func GameBoard(Data [9][9]int, puzzle [9][9]int, cursor [2]int, width int) string {
+func GameBoard(Data [9][9]int, puzzle [9][9]int, cursor [2]int) string {
 	var result string
 	cursorRaw := Data[cursor[1]][cursor[0]]
 	cursorIsMistake := cursorRaw < 0
@@ -48,12 +48,10 @@ func GameBoard(Data [9][9]int, puzzle [9][9]int, cursor [2]int, width int) strin
 	}
 
 	for i := range 9 {
-		line := Line(Data[i], puzzle, cursor, i, cursorValue)
-		line = lipgloss.PlaceHorizontal(width, lipgloss.Center, line)
 		if i == 2 || i == 5 {
-			result = result + line + "\n\n"
+			result = result + Line(Data[i], puzzle, cursor, i, cursorValue) + "\n\n"
 		} else {
-			result = result + line + "\n"
+			result = result + Line(Data[i], puzzle, cursor, i, cursorValue) + "\n"
 		}
 	}
 	return result
