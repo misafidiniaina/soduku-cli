@@ -8,19 +8,21 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/misafidiniaina/sudoku/internal/logic"
+	"github.com/misafidiniaina/sudoku/internal/logic/gen"
 	"github.com/misafidiniaina/sudoku/internal/ui"
 )
 
-
 type Model struct {
 
-	// Data for the game 
-	Cells [9][9]int
+	// Data for the game
+	Cells    [9][9]int
+	Puzzle   [9][9]int
+	Solution [9][9]int
 
 	StartTime time.Time
-    Elapsed   time.Duration
-    Paused    bool
-	
+	Elapsed   time.Duration
+	Paused    bool
+
 	// player mistake counter
 	Mistake int
 	// Postion of the cursor index 0 represting the x axes and index 1 for the y axes
@@ -36,7 +38,6 @@ func tick() tea.Cmd {
 	})
 }
 
-
 func (m Model) Init() tea.Cmd {
 	return tea.Batch(
 		tea.ClearScreen,
@@ -44,21 +45,16 @@ func (m Model) Init() tea.Cmd {
 	)
 }
 
-
-
-
-
-
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	i := m.cursor[0]
 	j := m.cursor[1]
 
 	switch msg := msg.(type) {
-		
+
 	case TickMsg:
 		if !m.Paused {
-        	m.Elapsed += time.Second
+			m.Elapsed += time.Second
 		}
 		return m, tick()
 
@@ -66,7 +62,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		key := msg.String()
 
-		switch key{
+		switch key {
 
 		case "q", "ctrl+c":
 			return m, tea.Quit
@@ -76,7 +72,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "down":
 			m.cursor[1] = logic.CursorHandling("down", m.cursor[1])
-		
+
 		case "left":
 			m.cursor[0] = logic.CursorHandling("left", m.cursor[0])
 
@@ -89,20 +85,19 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "p":
 			m.Paused = !m.Paused
 			return m, nil
-		
 
 		default:
-			if len(key) == 1 && key[0] >= '1' && key[0] <= '9' && logic.IsEditable(m.cursor){
+			if len(key) == 1 && key[0] >= '1' && key[0] <= '9' && logic.IsEditableAt(m.Puzzle, m.cursor) {
 				// if the user input is a mistake return a negatif value (easy to track)
-				if logic.IsNotValid(j, i, int(key[0]-'0')) {
-				m.Cells[j][i] = -int(key[0] - '0')  // negative = mistake
-				m.Mistake++
-			} else {
-				m.Cells[j][i] = int(key[0] - '0')
+				if m.Solution[j][i] != int(key[0]-'0') {
+					m.Cells[j][i] = -int(key[0] - '0') // negative = mistake
+					m.Mistake++
+				} else {
+					m.Cells[j][i] = int(key[0] - '0')
+				}
+
 			}
-				
-			}
-			
+
 		}
 
 	}
@@ -110,13 +105,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-
 func (m Model) View() string {
 	var MaingContent string
 	if m.Paused {
 		MaingContent = ui.PausedGameSyle.Render("        GAME PAUSED, \nPress 'p' to resume the game")
-	}else{
-		MaingContent = ui.GameBoard(m.Cells, m.cursor)
+	} else {
+		MaingContent = ui.GameBoard(m.Cells, m.Puzzle, m.cursor)
 	}
 
 	GameView := lipgloss.JoinVertical(
@@ -130,12 +124,10 @@ func (m Model) View() string {
 	return wrapper
 }
 
-
-
 func main() {
 
-	data := logic.GenerateData()
-	p := tea.NewProgram(Model{Cells: data, StartTime: time.Now(), Mistake: 0, cursor: [2]int{0,0}}, )
+	puzzle, solution := gen.PuzzleGen()
+	p := tea.NewProgram(Model{Cells: puzzle, Puzzle: puzzle, Solution: solution, StartTime: time.Now(), Mistake: 0, cursor: [2]int{0, 0}})
 
 	if _, err := p.Run(); err != nil {
 		fmt.Println(err)
