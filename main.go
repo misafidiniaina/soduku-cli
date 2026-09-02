@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"time"
@@ -12,6 +11,8 @@ import (
 	"github.com/misafidiniaina/sudoku/internal/logic/gen"
 	"github.com/misafidiniaina/sudoku/internal/ui"
 )
+
+var difficulties = []gen.Difficulty{gen.Easy, gen.Medium, gen.Hard, gen.Expert, gen.Master, gen.Extreme}
 
 type Model struct {
 
@@ -25,7 +26,9 @@ type Model struct {
 	Paused    bool
 
 	// player mistake counter
-	Mistake int
+	Mistake        int
+	SelectingLevel bool
+	LevelIndex     int
 	// Postion of the cursor index 0 represting the x axes and index 1 for the y axes
 	cursor [2]int
 }
@@ -62,6 +65,22 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 
 		key := msg.String()
+		if m.SelectingLevel {
+			switch key {
+			case "up", "left":
+				m.LevelIndex = (m.LevelIndex + len(difficulties) - 1) % len(difficulties)
+			case "down", "right":
+				m.LevelIndex = (m.LevelIndex + 1) % len(difficulties)
+			case "1", "2", "3", "4", "5", "6":
+				m.LevelIndex = int(key[0] - '1')
+			case "enter":
+				m.Puzzle, m.Solution = gen.PuzzleGenAt(difficulties[m.LevelIndex])
+				m.Cells = m.Puzzle
+				m.StartTime = time.Now()
+				m.SelectingLevel = false
+			}
+			return m, nil
+		}
 
 		switch key {
 
@@ -107,6 +126,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
+	if m.SelectingLevel {
+		return ui.WrapperStyle.Render(ui.LevelSelector(difficulties, m.LevelIndex)) + "\n"
+	}
 	var MaingContent string
 	if m.Paused {
 		MaingContent = ui.PausedGameSyle.Render("        GAME PAUSED, \nPress 'p' to resume the game")
@@ -126,16 +148,7 @@ func (m Model) View() string {
 }
 
 func main() {
-	level := flag.String("level", string(gen.Medium), "difficulty: easy, medium, hard, expert, master, or extreme")
-	flag.Parse()
-	difficulty, err := gen.ParseDifficulty(*level)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(2)
-	}
-
-	puzzle, solution := gen.PuzzleGenAt(difficulty)
-	p := tea.NewProgram(Model{Cells: puzzle, Puzzle: puzzle, Solution: solution, StartTime: time.Now(), Mistake: 0, cursor: [2]int{0, 0}})
+	p := tea.NewProgram(Model{SelectingLevel: true, LevelIndex: 1})
 
 	if _, err := p.Run(); err != nil {
 		fmt.Println(err)

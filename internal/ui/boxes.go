@@ -5,7 +5,20 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/misafidiniaina/sudoku/internal/logic"
+	"github.com/misafidiniaina/sudoku/internal/logic/gen"
 )
+
+func LevelSelector(levels []gen.Difficulty, selected int) string {
+	items := "Select a difficulty\n\n"
+	for i, level := range levels {
+		prefix := "  "
+		if i == selected {
+			prefix = "> "
+		}
+		items += fmt.Sprintf("%s%d. %s\n", prefix, i+1, level)
+	}
+	return HeadItemStyle.Render(items) + "\nUse arrows or 1-6, then press Enter"
+}
 
 func GameBoard(Data [9][9]int, puzzle [9][9]int, cursor [2]int) string {
 	var result string
