@@ -33,8 +33,6 @@ type Model struct {
 	RestartChoice  int
 	SelectingLevel bool
 	LevelIndex     int
-	Width          int
-	Height         int
 	// Postion of the cursor index 0 represting the x axes and index 1 for the y axes
 	cursor [2]int
 }
@@ -61,9 +59,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	j := m.cursor[1]
 
 	switch msg := msg.(type) {
-	case tea.WindowSizeMsg:
-		m.Width = msg.Width
-		m.Height = msg.Height
 
 	case TickMsg:
 		if !m.Paused {
@@ -197,8 +192,7 @@ func gameWon(cells, puzzle, solution [9][9]int) bool {
 
 func (m Model) View() string {
 	if m.SelectingLevel {
-		content := ui.WrapperStyle.Render(ui.LevelSelector(difficulties, m.LevelIndex))
-		return lipgloss.Place(m.Width, m.Height, lipgloss.Center, lipgloss.Center, content)
+		return ui.WrapperStyle.Render(ui.LevelSelector(difficulties, m.LevelIndex)) + "\n"
 	}
 	if m.Restarting {
 		content := ui.WrapperStyle.Render(ui.RestartSelector(m.RestartChoice))
@@ -222,12 +216,12 @@ func (m Model) View() string {
 		ui.CommandHelper(),
 	)
 
-	wrapper := ui.WrapperStyle.Render(GameView)
-	return lipgloss.Place(m.Width, m.Height, lipgloss.Center, lipgloss.Center, wrapper)
+	wrapper := ui.WrapperStyle.Render(GameView) + "\n"
+	return wrapper
 }
 
 func main() {
-	p := tea.NewProgram(Model{SelectingLevel: true, LevelIndex: 1, Width: 80, Height: 24})
+	p := tea.NewProgram(Model{SelectingLevel: true, LevelIndex: 1})
 
 	if _, err := p.Run(); err != nil {
 		fmt.Println(err)
