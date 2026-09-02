@@ -42,18 +42,20 @@ func GameBoard(Data [9][9]int, puzzle [9][9]int, cursor [2]int) string {
 	return result
 }
 
-func GameHeader(score int, error int, time string) string {
+func GameHeader(score int, level string, error int, time string) string {
 	var result string
 
 	scoreItem := HeadTextStyle.Render("Score: ") + fmt.Sprint(score) + "\n"
 	errorItem := HeadTextStyle.Render("   Mistakes: ") + fmt.Sprint(error) + "\n"
 	timeItem := HeadTextStyle.Render("  Time: ") + time + "\n"
+	levelItem := HeadTextStyle.Render("Level: ") + level + "\n"
 
 	result = lipgloss.JoinHorizontal(
 		lipgloss.Center,
 		HeadItemStyle.Render(scoreItem),
 		HeadItemStyle.Render(errorItem),
 		HeadItemStyle.Render(timeItem),
+		HeadItemStyle.Render(levelItem),
 	)
 
 	return result
