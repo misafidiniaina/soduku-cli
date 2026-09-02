@@ -195,8 +195,7 @@ func (m Model) View() string {
 		return ui.WrapperStyle.Render(ui.LevelSelector(difficulties, m.LevelIndex)) + "\n"
 	}
 	if m.Restarting {
-		content := ui.WrapperStyle.Render(ui.RestartSelector(m.RestartChoice))
-		return lipgloss.Place(m.Width, m.Height, lipgloss.Center, lipgloss.Center, content)
+		return ui.WrapperStyle.Render(ui.RestartSelector(m.RestartChoice)) + "\n"
 	}
 	var MaingContent string
 	if m.GameOver {
