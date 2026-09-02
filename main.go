@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"time"
@@ -125,8 +126,15 @@ func (m Model) View() string {
 }
 
 func main() {
+	level := flag.String("level", string(gen.Medium), "difficulty: easy, medium, hard, expert, master, or extreme")
+	flag.Parse()
+	difficulty, err := gen.ParseDifficulty(*level)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(2)
+	}
 
-	puzzle, solution := gen.PuzzleGen()
+	puzzle, solution := gen.PuzzleGenAt(difficulty)
 	p := tea.NewProgram(Model{Cells: puzzle, Puzzle: puzzle, Solution: solution, StartTime: time.Now(), Mistake: 0, cursor: [2]int{0, 0}})
 
 	if _, err := p.Run(); err != nil {
