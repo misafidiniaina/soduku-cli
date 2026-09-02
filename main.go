@@ -138,7 +138,7 @@ func (m Model) View() string {
 
 	GameView := lipgloss.JoinVertical(
 		lipgloss.Left,
-		ui.GameHeader(125, m.Mistake, logic.Chrono(m.Elapsed)),
+		ui.GameHeader(logic.Score(m.Cells, m.Puzzle, m.Mistake, m.Elapsed), m.Mistake, logic.Chrono(m.Elapsed)),
 		MaingContent,
 		ui.CommandHelper(),
 	)
