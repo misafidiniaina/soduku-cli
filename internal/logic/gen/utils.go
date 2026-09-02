@@ -78,7 +78,7 @@ func IsSodukuValid(sodukuData [9][9]int) bool{
 	}
 
 	// Check columns
-	for i := 0; i < 9; i++ {
+	for i := range 9 {
 		var column [9]int
 
 		for j := 0; j < 9; j++ {
@@ -91,7 +91,7 @@ func IsSodukuValid(sodukuData [9][9]int) bool{
 	}
 
 	// check 3x3 boxes validation
-	for boxRow := 0; boxRow < 3; boxRow++ {
+	for boxRow := range 3 {
 		for boxCol := range 3 {
 			var box [9]int
 			index := 0
