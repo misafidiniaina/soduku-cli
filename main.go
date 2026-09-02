@@ -226,7 +226,8 @@ func (m Model) View() string {
 		ui.CommandHelper(),
 	)
 
-	return ui.WrapperStyle.Render(GameView)
+	wrapper := ui.WrapperStyle.Width(contentWidth).Align(lipgloss.Center).Render(GameView)
+	return lipgloss.Place(m.Width, m.Height, lipgloss.Center, lipgloss.Center, wrapper)
 }
 
 func main() {

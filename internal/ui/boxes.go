@@ -2,7 +2,6 @@ package ui
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/misafidiniaina/sudoku/internal/logic"
@@ -50,10 +49,7 @@ func GameBoard(Data [9][9]int, puzzle [9][9]int, cursor [2]int, width int) strin
 
 	for i := range 9 {
 		line := Line(Data[i], puzzle, cursor, i, cursorValue)
-		leftPadding := (width - lipgloss.Width(line)) / 2
-		if leftPadding > 0 {
-			line = strings.Repeat(" ", leftPadding) + line
-		}
+		line = lipgloss.PlaceHorizontal(width, lipgloss.Center, line)
 		if i == 2 || i == 5 {
 			result = result + line + "\n\n"
 		} else {
