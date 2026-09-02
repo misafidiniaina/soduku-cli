@@ -27,6 +27,7 @@ type Model struct {
 
 	// player mistake counter
 	Mistake        int
+	GameOver       bool
 	SelectingLevel bool
 	LevelIndex     int
 	// Postion of the cursor index 0 represting the x axes and index 1 for the y axes
@@ -63,6 +64,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, tick()
 
 	case tea.KeyMsg:
+		if m.GameOver {
+			if msg.String() == "q" || msg.String() == "ctrl+c" {
+				return m, tea.Quit
+			}
+			return m, nil
+		}
 
 		key := msg.String()
 		if m.SelectingLevel {
@@ -112,6 +119,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if m.Solution[j][i] != int(key[0]-'0') {
 					m.Cells[j][i] = -int(key[0] - '0') // negative = mistake
 					m.Mistake++
+					if m.Mistake > 3 {
+						m.GameOver = true
+					}
 				} else {
 					m.Cells[j][i] = int(key[0] - '0')
 				}
@@ -130,7 +140,9 @@ func (m Model) View() string {
 		return ui.WrapperStyle.Render(ui.LevelSelector(difficulties, m.LevelIndex)) + "\n"
 	}
 	var MaingContent string
-	if m.Paused {
+	if m.GameOver {
+		MaingContent = ui.GameOverStyle.Render("GAME OVER\nYou made more than 3 mistakes\nPress 'q' to quit")
+	} else if m.Paused {
 		MaingContent = ui.PausedGameSyle.Render("        GAME PAUSED, \nPress 'p' to resume the game")
 	} else {
 		MaingContent = ui.GameBoard(m.Cells, m.Puzzle, m.cursor)

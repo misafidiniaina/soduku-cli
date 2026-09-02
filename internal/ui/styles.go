@@ -51,6 +51,11 @@ var (
 			Bold(true).
 			Foreground(Message).
 			Padding(14)
+	GameOverStyle = lipgloss.NewStyle().
+			Bold(true).
+			Foreground(Secondary).
+			Align(lipgloss.Center).
+			Padding(8)
 	LevelTitleStyle    = lipgloss.NewStyle().Bold(true).Foreground(Primary)
 	LevelSelectedStyle = lipgloss.NewStyle().Bold(true).Foreground(Warning)
 	LevelOptionStyle   = lipgloss.NewStyle().Foreground(Fixed)
