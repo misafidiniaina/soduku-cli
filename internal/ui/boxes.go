@@ -9,15 +9,17 @@ import (
 )
 
 func LevelSelector(levels []gen.Difficulty, selected int) string {
-	items := "Select a difficulty\n\n"
+	items := LevelTitleStyle.Render("SUDOKU • SELECT DIFFICULTY") + "\n\n"
 	for i, level := range levels {
 		prefix := "  "
+		style := LevelOptionStyle
 		if i == selected {
 			prefix = "> "
+			style = LevelSelectedStyle
 		}
-		items += fmt.Sprintf("%s%d. %s\n", prefix, i+1, level)
+		items += style.Render(fmt.Sprintf("%s%d. %s", prefix, i+1, level)) + "\n"
 	}
-	return HeadItemStyle.Render(items) + "\nUse arrows or 1-6, then press Enter"
+	return items + CmdStyle.Render("Use arrows or 1–6, then press Enter")
 }
 
 func GameBoard(Data [9][9]int, puzzle [9][9]int, cursor [2]int) string {
@@ -45,10 +47,10 @@ func GameBoard(Data [9][9]int, puzzle [9][9]int, cursor [2]int) string {
 func GameHeader(score int, level string, error int, time string) string {
 	var result string
 
-	scoreItem := HeadTextStyle.Render("Score: ") + fmt.Sprint(score) + "\n"
-	errorItem := HeadTextStyle.Render("   Mistakes: ") + fmt.Sprint(error) + "\n"
-	timeItem := HeadTextStyle.Render("  Time: ") + time + "\n"
-	levelItem := HeadTextStyle.Render("Level: ") + level + "\n"
+	scoreItem := HeadTextStyle.Render("Score: ") + HeaderValueStyle.Render(fmt.Sprint(score)) + "\n"
+	errorItem := HeadTextStyle.Render("Mistakes: ") + HeaderValueStyle.Render(fmt.Sprint(error)) + "\n"
+	timeItem := HeadTextStyle.Render("Time: ") + HeaderValueStyle.Render(time) + "\n"
+	levelItem := HeadTextStyle.Render("Level: ") + HeaderValueStyle.Render(level) + "\n"
 
 	result = lipgloss.JoinHorizontal(
 		lipgloss.Center,
