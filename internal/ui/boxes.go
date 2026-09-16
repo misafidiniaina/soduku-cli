@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/misafidiniaina/sudoku/internal/logic"
-	"github.com/misafidiniaina/sudoku/internal/logic/gen"
+	"github.com/misafidiniaina/sudoku/internal/sudoku/logic"
+	"github.com/misafidiniaina/sudoku/internal/sudoku/logic/gen"
 )
 
 func LevelSelector(levels []gen.Difficulty, selected int) string {

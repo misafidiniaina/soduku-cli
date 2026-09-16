@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/misafidiniaina/sudoku/internal/logic"
+	"github.com/misafidiniaina/sudoku/internal/sudoku/logic"
 )
 
 func Line(rowData [9]int, puzzle [9][9]int, cursor [2]int, line int, cursorValue int) string {

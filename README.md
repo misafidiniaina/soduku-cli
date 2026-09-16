@@ -120,8 +120,8 @@ The project is organized into:
 - `main.go` — generic game launcher and menu navigation.
 - `internal/sudoku` — Sudoku Bubble Tea model, input handling, state, and rendering.
 - `internal/snake` — Snake Bubble Tea model, game rules, state, and rendering.
-- `internal/logic` — Sudoku scoring, timing, cursor behavior, and shared helpers.
-- `internal/logic/gen` — Sudoku solved-board and puzzle generation.
+- `internal/sudoku/logic` — Sudoku scoring, timing, cursor behavior, and shared helpers.
+- `internal/sudoku/logic/gen` — Sudoku solved-board and puzzle generation.
 - `internal/ui` — terminal rendering and styles.
 
 Each game exposes the standard Bubble Tea `Init`, `Update`, and `View` methods. To add a game, create a package under `internal`, implement that interface, and register its model and display name in `newAppModel` in `main.go`.

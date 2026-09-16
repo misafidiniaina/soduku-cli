@@ -5,8 +5,8 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/misafidiniaina/sudoku/internal/logic"
-	"github.com/misafidiniaina/sudoku/internal/logic/gen"
+	"github.com/misafidiniaina/sudoku/internal/sudoku/logic"
+	"github.com/misafidiniaina/sudoku/internal/sudoku/logic/gen"
 	"github.com/misafidiniaina/sudoku/internal/ui"
 )
 
