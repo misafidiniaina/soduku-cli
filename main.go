@@ -9,6 +9,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/misafidiniaina/sudoku/internal/logic"
 	"github.com/misafidiniaina/sudoku/internal/logic/gen"
+	"github.com/misafidiniaina/sudoku/internal/snake"
 	"github.com/misafidiniaina/sudoku/internal/ui"
 )
 
@@ -230,8 +231,90 @@ func (m Model) View() string {
 	return wrapper
 }
 
+type appModel struct {
+	gameChoice int
+	screen     int
+	sudoku     Model
+	snake      snake.Model
+}
+
+func (m appModel) Init() tea.Cmd {
+	if m.screen == 1 {
+		return m.sudoku.Init()
+	}
+	if m.screen == 2 {
+		return m.snake.Init()
+	}
+	return nil
+}
+
+func (m appModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
+	if m.screen == 0 {
+		if keyMessage, ok := message.(tea.KeyMsg); ok {
+			switch keyMessage.String() {
+			case "q", "ctrl+c":
+				return m, tea.Quit
+			case "up", "left", "down", "right":
+				m.gameChoice = 1 - m.gameChoice
+			case "enter":
+				if m.gameChoice == 0 {
+					m.screen = 1
+					return m, m.sudoku.Init()
+				}
+				m.screen = 2
+				return m, m.snake.Init()
+			}
+		}
+		return m, nil
+	}
+
+	if keyMessage, ok := message.(tea.KeyMsg); ok && keyMessage.String() == "m" {
+		m.screen = 0
+		return m, nil
+	}
+
+	if m.screen == 1 {
+		updated, command := m.sudoku.Update(message)
+		m.sudoku = updated.(Model)
+		return m, command
+	}
+	updated, command := m.snake.Update(message)
+	m.snake = updated.(snake.Model)
+	return m, command
+}
+
+func (m appModel) View() string {
+	if m.screen == 1 {
+		return m.sudoku.View()
+	}
+	if m.screen == 2 {
+		return m.snake.View()
+	}
+
+	options := []string{"Sudoku", "Snake"}
+	for index, option := range options {
+		style := lipgloss.NewStyle().Padding(0, 2)
+		if index == m.gameChoice {
+			style = style.Bold(true).Foreground(ui.Success).Background(ui.Primary)
+		}
+		options[index] = style.Render(option)
+	}
+
+	menu := lipgloss.JoinVertical(lipgloss.Center,
+		lipgloss.NewStyle().Bold(true).Foreground(ui.Primary).Render("CLI GAMES"),
+		"",
+		lipgloss.JoinVertical(lipgloss.Left, options...),
+		"",
+		ui.CmdStyle.Render("[↑/↓] Choose   [Enter] Start   [Q] Quit"),
+	)
+	return lipgloss.NewStyle().Padding(2, 4).Border(lipgloss.RoundedBorder()).BorderForeground(ui.Primary).Render(menu)
+}
+
 func main() {
-	p := tea.NewProgram(Model{SelectingLevel: true, LevelIndex: 1, Width: 80, Height: 24})
+	p := tea.NewProgram(appModel{
+		sudoku: Model{SelectingLevel: true, LevelIndex: 1, Width: 80, Height: 24},
+		snake:  snake.NewModel(),
+	})
 
 	if _, err := p.Run(); err != nil {
 		fmt.Println(err)

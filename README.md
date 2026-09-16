@@ -1,8 +1,12 @@
-# Sudoku TUI
+# CLI Games
 
-A colorful terminal Sudoku game built with Go, [Bubble Tea](https://github.com/charmbracelet/bubbletea), and [Lip Gloss](https://github.com/charmbracelet/lipgloss).
+A collection of terminal games built with Go, [Bubble Tea](https://github.com/charmbracelet/bubbletea), and [Lip Gloss](https://github.com/charmbracelet/lipgloss).
+
+The launcher currently includes Sudoku and Snake.
 
 ## Features
+
+### Sudoku
 
 - Randomly generated Sudoku boards with a matching solution.
 - Six difficulty levels: Easy, Medium, Hard, Expert, Master, and Extreme.
@@ -12,6 +16,12 @@ A colorful terminal Sudoku game built with Go, [Bubble Tea](https://github.com/c
 - Pause, restart, and victory flows.
 - Colored cells for fixed values, editable values, selected cells, matching values, and mistakes.
 - Board layout adapts to the terminal window.
+
+### Snake
+
+- Real-time movement with keyboard arrows or `W` `A` `S` `D`.
+- Food, growing body, score, wall and self-collision detection.
+- Pause and restart flows.
 
 ## Requirements
 
@@ -24,7 +34,7 @@ A colorful terminal Sudoku game built with Go, [Bubble Tea](https://github.com/c
 go run .
 ```
 
-When the game starts, choose a level with the arrow keys or `1`–`6`, then press `Enter`.
+When the launcher starts, choose Sudoku or Snake and press `Enter`. Sudoku then asks you to choose a difficulty level.
 
 ## Install as a CLI
 
@@ -44,15 +54,25 @@ To install a specific version or commit, replace `@latest` with the desired vers
 
 ## Controls
 
-| Key | Action |
-| --- | --- |
-| `↑` `↓` `←` `→` | Move the cursor |
-| `1`–`9` | Enter a number |
-| `Backspace` / `Delete` | Clear an editable cell |
-| `p` | Pause or resume |
-| `r` | Open restart options |
-| `q` / `Ctrl+C` | Quit |
-| `Enter` | Confirm a menu selection |
+| Key                    | Action                   |
+| ---------------------- | ------------------------ |
+| `↑` `↓` `←` `→`        | Move the cursor          |
+| `1`–`9`                | Enter a number           |
+| `Backspace` / `Delete` | Clear an editable cell   |
+| `p`                    | Pause or resume          |
+| `r`                    | Open restart options     |
+| `q` / `Ctrl+C`         | Quit                     |
+| `Enter`                | Confirm a menu selection |
+
+### Snake controls
+
+| Key                                | Action                  |
+| ---------------------------------- | ----------------------- |
+| `↑` `↓` `←` `→` or `W` `A` `S` `D` | Move the snake          |
+| `p` / `Space`                      | Pause or resume         |
+| `r`                                | Restart                 |
+| `m`                                | Return to the game menu |
+| `q` / `Ctrl+C`                     | Quit                    |
 
 After pressing `r`, choose one of these options with the arrows and press `Enter`:
 
@@ -66,14 +86,14 @@ The game ends after the third mistake. A completed board displays the victory sc
 
 Difficulty controls how many cells are removed from the generated solution:
 
-| Level | Empty cells |
-| --- | ---: |
-| Easy | 30 |
-| Medium | 40 |
-| Hard | 45 |
-| Expert | 50 |
-| Master | 55 |
-| Extreme | 60 |
+| Level   | Empty cells |
+| ------- | ----------: |
+| Easy    |          30 |
+| Medium  |          40 |
+| Hard    |          45 |
+| Expert  |          50 |
+| Master  |          55 |
+| Extreme |          60 |
 
 ## Scoring
 
@@ -98,7 +118,8 @@ The project is organized into:
 - `internal/logic` — game rules, scoring, timing, and cursor behavior.
 - `internal/logic/gen` — solved-board and puzzle generation.
 - `internal/ui` — terminal rendering and styles.
-- `main.go` — Bubble Tea application state and input handling.
+- `main.go` — game launcher, Bubble Tea application state, and input handling.
+- `internal/snake` — Snake game rules, state, rendering, and tests.
 
 ## License
 
