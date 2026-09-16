@@ -8,6 +8,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/misafidiniaina/sudoku/internal/snake"
 	"github.com/misafidiniaina/sudoku/internal/sudoku"
+	"github.com/misafidiniaina/sudoku/internal/tetris"
 	"github.com/misafidiniaina/sudoku/internal/ui"
 )
 
@@ -20,8 +21,8 @@ type appModel struct {
 
 func newAppModel() appModel {
 	return appModel{
-		games:  []tea.Model{sudoku.NewModel(), snake.NewModel()},
-		names:  []string{"Sudoku", "Snake"},
+		games:  []tea.Model{sudoku.NewModel(), snake.NewModel(), tetris.NewModel()},
+		names:  []string{"Sudoku", "Snake", "Tetris"},
 		active: -1,
 	}
 }

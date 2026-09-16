@@ -2,7 +2,7 @@
 
 A collection of terminal games built with Go, [Bubble Tea](https://github.com/charmbracelet/bubbletea), and [Lip Gloss](https://github.com/charmbracelet/lipgloss).
 
-The launcher currently includes Sudoku and Snake.
+The launcher currently includes Sudoku, Snake, and Tetris.
 
 ## Features
 
@@ -23,6 +23,12 @@ The launcher currently includes Sudoku and Snake.
 - Food, growing body, score, wall and self-collision detection.
 - Progressive speed and level increases every five foods.
 - Best score preserved across restarts during the current session.
+- Pause and restart flows.
+
+### Tetris
+
+- Seven tetrominoes with rotation, automatic falling, and instant drop.
+- Line clearing, score, and progressive levels.
 - Pause and restart flows.
 
 ## Requirements
@@ -76,6 +82,19 @@ To install a specific version or commit, replace `@latest` with the desired vers
 | `m`                                | Return to the game menu |
 | `q` / `Ctrl+C`                     | Quit                    |
 
+### Tetris controls
+
+| Key               | Action                  |
+| ----------------- | ----------------------- |
+| `↑` / `W`         | Rotate the piece        |
+| `←` `→` / `A` `D` | Move the piece          |
+| `↓` / `S`         | Soft drop               |
+| `Enter`           | Instant drop            |
+| `p` / `Space`     | Pause or resume         |
+| `r`               | Restart                 |
+| `m`               | Return to the game menu |
+| `q` / `Ctrl+C`    | Quit                    |
+
 After pressing `r`, choose one of these options with the arrows and press `Enter`:
 
 1. Replay the existing board.
@@ -120,6 +139,7 @@ The project is organized into:
 - `main.go` — generic game launcher and menu navigation.
 - `internal/sudoku` — Sudoku Bubble Tea model, input handling, state, and rendering.
 - `internal/snake` — Snake Bubble Tea model, game rules, state, and rendering.
+- `internal/tetris` — Tetris Bubble Tea model, game rules, state, and rendering.
 - `internal/sudoku/logic` — Sudoku scoring, timing, cursor behavior, and shared helpers.
 - `internal/sudoku/logic/gen` — Sudoku solved-board and puzzle generation.
 - `internal/ui` — terminal rendering and styles.
