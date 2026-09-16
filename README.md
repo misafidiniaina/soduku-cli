@@ -60,27 +60,6 @@ cligames
 
 To install a specific version or commit, replace `@latest` with the desired version, for example `@v1.0.0`.
 
-## Difficulty levels
-
-Difficulty controls how many cells are removed from the generated solution:
-
-| Level   | Empty cells |
-| ------- | ----------: |
-| Easy    |          30 |
-| Medium  |          40 |
-| Hard    |          45 |
-| Expert  |          50 |
-| Master  |          55 |
-| Extreme |          60 |
-
-## Scoring
-
-The score starts at zero and is recalculated during play:
-
-- `+100` for each correctly filled editable cell.
-- `-50` for each mistake.
-- `-1` for each elapsed second.
-- The score never drops below zero.
 
 ## Development
 
