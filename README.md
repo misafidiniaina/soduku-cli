@@ -49,13 +49,13 @@ When the launcher starts, choose Sudoku, Snake, or Tetris and press `Enter`. Sud
 Install the latest version directly with Go:
 
 ```bash
-go install github.com/misafidiniaina/sudoku@latest
+go install github.com/misafidiniaina/soduku-cli/cmd/cligames@latest
 ```
 
-Go installs the `sudoku` executable in `GOBIN` when it is set, or otherwise in `GOPATH/bin`. Make sure that directory is in your `PATH`, then start the game from anywhere:
+Go installs the `cligames` executable in `GOBIN` when it is set, or otherwise in `GOPATH/bin`. Make sure that directory is in your `PATH`, then start the game from anywhere:
 
 ```bash
-sudoku
+cligames
 ```
 
 To install a specific version or commit, replace `@latest` with the desired version, for example `@v1.0.0`.
@@ -93,7 +93,9 @@ go vet ./...
 
 The project is organized into:
 
-- `main.go` — generic game launcher and menu navigation.
+- `main.go` — root compatibility entry point for `go run .`.
+- `cmd/cligames` — installable CLI entry point that produces the `cligames` binary.
+- `internal/app` — shared game launcher and menu navigation.
 - `internal/sudoku` — Sudoku Bubble Tea model, input handling, state, and rendering ([documentation](internal/sudoku/README.md)).
 - `internal/snake` — Snake Bubble Tea model, game rules, state, and rendering ([documentation](internal/snake/README.md)).
 - `internal/tetris` — Tetris Bubble Tea model, game rules, state, and rendering ([documentation](internal/tetris/README.md)).
@@ -101,7 +103,7 @@ The project is organized into:
 - `internal/sudoku/logic/gen` — Sudoku solved-board and puzzle generation.
 - `internal/ui` — terminal rendering and styles.
 
-Each game exposes the standard Bubble Tea `Init`, `Update`, and `View` methods. To add a game, create a package under `internal`, implement that interface, and register its model and display name in `newAppModel` in `main.go`.
+Each game exposes the standard Bubble Tea `Init`, `Update`, and `View` methods. To add a game, create a package under `internal`, implement that interface, and register its model and display name in `newAppModel` in `internal/app/app.go`.
 
 ## License
 

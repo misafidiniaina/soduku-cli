@@ -1,4 +1,4 @@
-module github.com/misafidiniaina/sudoku
+module github.com/misafidiniaina/soduku-cli
 
 go 1.26.3
 
