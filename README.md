@@ -42,7 +42,7 @@ The launcher currently includes Sudoku, Snake, and Tetris.
 go run .
 ```
 
-When the launcher starts, choose Sudoku or Snake and press `Enter`. Sudoku then asks you to choose a difficulty level.
+When the launcher starts, choose Sudoku, Snake, or Tetris and press `Enter`. Sudoku then asks you to choose a difficulty level.
 
 ## Install as a CLI
 
@@ -59,49 +59,6 @@ sudoku
 ```
 
 To install a specific version or commit, replace `@latest` with the desired version, for example `@v1.0.0`.
-
-## Controls
-
-| Key                    | Action                   |
-| ---------------------- | ------------------------ |
-| `↑` `↓` `←` `→`        | Move the cursor          |
-| `1`–`9`                | Enter a number           |
-| `Backspace` / `Delete` | Clear an editable cell   |
-| `p`                    | Pause or resume          |
-| `r`                    | Open restart options     |
-| `q` / `Ctrl+C`         | Quit                     |
-| `Enter`                | Confirm a menu selection |
-
-### Snake controls
-
-| Key                                | Action                  |
-| ---------------------------------- | ----------------------- |
-| `↑` `↓` `←` `→` or `W` `A` `S` `D` | Move the snake          |
-| `p` / `Space`                      | Pause or resume         |
-| `r`                                | Restart                 |
-| `m`                                | Return to the game menu |
-| `q` / `Ctrl+C`                     | Quit                    |
-
-### Tetris controls
-
-| Key               | Action                  |
-| ----------------- | ----------------------- |
-| `↑` / `W`         | Rotate the piece        |
-| `←` `→` / `A` `D` | Move the piece          |
-| `↓` / `S`         | Soft drop               |
-| `Enter`           | Instant drop            |
-| `p` / `Space`     | Pause or resume         |
-| `r`               | Restart                 |
-| `m`               | Return to the game menu |
-| `q` / `Ctrl+C`    | Quit                    |
-
-After pressing `r`, choose one of these options with the arrows and press `Enter`:
-
-1. Replay the existing board.
-2. Generate a new board at the current level.
-3. Choose another level.
-
-The game ends after the third mistake. A completed board displays the victory screen. Both screens allow restarting with `r`.
 
 ## Difficulty levels
 
@@ -137,9 +94,9 @@ go vet ./...
 The project is organized into:
 
 - `main.go` — generic game launcher and menu navigation.
-- `internal/sudoku` — Sudoku Bubble Tea model, input handling, state, and rendering.
-- `internal/snake` — Snake Bubble Tea model, game rules, state, and rendering.
-- `internal/tetris` — Tetris Bubble Tea model, game rules, state, and rendering.
+- `internal/sudoku` — Sudoku Bubble Tea model, input handling, state, and rendering ([documentation](internal/sudoku/README.md)).
+- `internal/snake` — Snake Bubble Tea model, game rules, state, and rendering ([documentation](internal/snake/README.md)).
+- `internal/tetris` — Tetris Bubble Tea model, game rules, state, and rendering ([documentation](internal/tetris/README.md)).
 - `internal/sudoku/logic` — Sudoku scoring, timing, cursor behavior, and shared helpers.
 - `internal/sudoku/logic/gen` — Sudoku solved-board and puzzle generation.
 - `internal/ui` — terminal rendering and styles.
