@@ -60,6 +60,19 @@ cligames
 
 To install a specific version or commit, replace `@latest` with the desired version, for example `@v1.0.0`.
 
+### Install from a checkout
+
+Build and install the binary in `~/.local/bin`:
+
+```bash
+./install.sh
+```
+
+The destination can be customized without `sudo`:
+
+```bash
+BINDIR="$HOME/bin" ./install.sh
+```
 
 ## Development
 
