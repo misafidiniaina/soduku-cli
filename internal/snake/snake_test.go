@@ -32,6 +32,9 @@ func TestStepGrowsWhenFoodIsAhead(t *testing.T) {
 	if model.Score != 1 {
 		t.Fatalf("score = %d, want 1", model.Score)
 	}
+	if model.BestScore != 1 {
+		t.Fatalf("best score = %d, want 1", model.BestScore)
+	}
 }
 
 func TestStepEndsAtWall(t *testing.T) {
@@ -53,5 +56,27 @@ func TestChangeDirectionRejectsReverse(t *testing.T) {
 
 	if model.Direction != right {
 		t.Fatalf("direction = %+v, want right", model.Direction)
+	}
+}
+
+func TestStepAllowsMovingIntoTail(t *testing.T) {
+	model := newModel(rand.New(rand.NewSource(1)))
+	model.Snake = []Point{{X: 5, Y: 5}, {X: 5, Y: 4}, {X: 4, Y: 4}, {X: 4, Y: 5}}
+	model.Direction = left
+	model.Food = Point{X: 20, Y: 10}
+
+	model.step()
+
+	if model.GameOver {
+		t.Fatal("moving into the tail should not end the game")
+	}
+}
+
+func TestTickRateGetsFasterWithScore(t *testing.T) {
+	if tickRate(0) <= tickRate(scorePerLevel) {
+		t.Fatal("tick rate should decrease as the score increases")
+	}
+	if tickRate(100) != minimumTickRate {
+		t.Fatalf("tick rate = %s, want minimum %s", tickRate(100), minimumTickRate)
 	}
 }

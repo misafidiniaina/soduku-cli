@@ -11,9 +11,11 @@ import (
 )
 
 const (
-	boardWidth  = 24
-	boardHeight = 14
-	tickRate    = 120 * time.Millisecond
+	boardWidth      = 24
+	boardHeight     = 14
+	initialTickRate = 150 * time.Millisecond
+	minimumTickRate = 65 * time.Millisecond
+	scorePerLevel   = 5
 )
 
 type Point struct {
@@ -37,6 +39,7 @@ type Model struct {
 	Food      Point
 	Direction Direction
 	Score     int
+	BestScore int
 	GameOver  bool
 	Paused    bool
 
@@ -63,13 +66,21 @@ func (m *Model) reset() {
 }
 
 func (m Model) Init() tea.Cmd {
-	return tick()
+	return tick(m.Score)
 }
 
-func tick() tea.Cmd {
-	return tea.Tick(tickRate, func(t time.Time) tea.Msg {
+func tick(score int) tea.Cmd {
+	return tea.Tick(tickRate(score), func(t time.Time) tea.Msg {
 		return tickMsg(t)
 	})
+}
+
+func tickRate(score int) time.Duration {
+	rate := initialTickRate - time.Duration(score/scorePerLevel)*10*time.Millisecond
+	if rate < minimumTickRate {
+		return minimumTickRate
+	}
+	return rate
 }
 
 func (m Model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
@@ -78,7 +89,7 @@ func (m Model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 		if !m.Paused && !m.GameOver {
 			m.step()
 		}
-		return m, tick()
+		return m, tick(m.Score)
 
 	case tea.KeyMsg:
 		switch message.String() {
@@ -116,17 +127,29 @@ func (m *Model) step() {
 	next := Point{X: head.X + m.Direction.X, Y: head.Y + m.Direction.Y}
 
 	if next.X < 0 || next.X >= boardWidth || next.Y < 0 || next.Y >= boardHeight || m.occupies(next) {
+		if next.X >= 0 && next.X < boardWidth && next.Y >= 0 && next.Y < boardHeight && next == m.Snake[len(m.Snake)-1] && next != m.Food {
+			m.move(next)
+			return
+		}
 		m.GameOver = true
 		return
 	}
 
-	m.Snake = append([]Point{next}, m.Snake...)
+	m.move(next)
 	if next == m.Food {
 		m.Score++
+		if m.Score > m.BestScore {
+			m.BestScore = m.Score
+		}
 		m.Food = m.randomFood()
-		return
 	}
-	m.Snake = m.Snake[:len(m.Snake)-1]
+}
+
+func (m *Model) move(next Point) {
+	m.Snake = append([]Point{next}, m.Snake...)
+	if next != m.Food {
+		m.Snake = m.Snake[:len(m.Snake)-1]
+	}
 }
 
 func (m Model) occupies(point Point) bool {
@@ -168,9 +191,10 @@ func (m Model) View() string {
 		rows = append(rows, row.String())
 	}
 
-	status := fmt.Sprintf("Score: %d   [Arrows/WASD] Move   [P/Space] Pause   [R] Restart   [Q] Quit", m.Score)
+	level := 1 + m.Score/scorePerLevel
+	status := fmt.Sprintf("Score: %d   Best: %d   Level: %d   [Arrows/WASD] Move   [P/Space] Pause   [R] Restart   [Q] Quit", m.Score, m.BestScore, level)
 	if m.GameOver {
-		status = fmt.Sprintf("GAME OVER - Score: %d   [R] Restart   [Q] Quit", m.Score)
+		status = fmt.Sprintf("GAME OVER - Score: %d   Best: %d   [R] Restart   [Q] Quit", m.Score, m.BestScore)
 	} else if m.Paused {
 		status = "PAUSED   [P/Space] Resume   [R] Restart   [Q] Quit"
 	}

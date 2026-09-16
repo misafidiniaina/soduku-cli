@@ -21,6 +21,8 @@ The launcher currently includes Sudoku and Snake.
 
 - Real-time movement with keyboard arrows or `W` `A` `S` `D`.
 - Food, growing body, score, wall and self-collision detection.
+- Progressive speed and level increases every five foods.
+- Best score preserved across restarts during the current session.
 - Pause and restart flows.
 
 ## Requirements
