@@ -15,7 +15,7 @@ The launcher currently includes Sudoku, Snake, and Tetris.
 - Score calculated from correct entries, mistakes, and elapsed time.
 - Pause, restart, and victory flows.
 - Colored cells for fixed values, editable values, selected cells, matching values, and mistakes.
-- Compact grid with row, column, and box highlighting.
+- Individually bordered cells with row, column, and matching-value highlighting.
 - Visible-grid candidate suggestions and a filled-cell counter.
 - Given clues and paused boards are protected from edits.
 
@@ -48,7 +48,7 @@ The launcher currently includes Sudoku, Snake, and Tetris.
 go run .
 ```
 
-When the launcher starts, choose Sudoku, Snake, or Tetris and press `Enter`. Sudoku then asks you to choose a difficulty level. Press `m` in any game to return to the launcher; games pause and retain their state. Reopen a paused game and press `p` to resume. An 80×24 terminal is recommended.
+When the launcher starts, choose Sudoku, Snake, or Tetris and press `Enter`. Sudoku then asks you to choose a difficulty level. Press `m` in any game to return to the launcher; games pause and retain their state. Reopen a paused game and press `p` to resume. Snake and Tetris fit an 80×24 terminal; Sudoku’s original bordered-cell board benefits from a taller window.
 
 ## Install as a CLI
 
