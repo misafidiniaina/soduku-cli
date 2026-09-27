@@ -70,3 +70,55 @@ func TestHardDropLocksAndScoresDistance(t *testing.T) {
 		t.Fatal("a new piece should spawn at the top after hard drop")
 	}
 }
+
+func TestBagContainsEveryPiece(t *testing.T) {
+	m := newModel(rand.New(rand.NewSource(1)))
+	m.bag = nil
+	for batch := 0; batch < 5; batch++ {
+		seen := map[PieceType]bool{}
+		for i := 0; i < 7; i++ {
+			seen[m.newPiece().Type] = true
+		}
+		if len(seen) != 7 {
+			t.Fatal("bag omitted a tetromino")
+		}
+	}
+}
+
+func TestPausedRotationAndWallKick(t *testing.T) {
+	m := newModel(rand.New(rand.NewSource(1)))
+	m.Paused = true
+	original := m.Current
+	if m.rotate() || m.Current != original {
+		t.Fatal("rotated while paused")
+	}
+	m.Paused = false
+	m.Current = Piece{Type: I, Rotation: 1, X: -2}
+	if !m.valid(m.Current) || !m.rotate() || !m.valid(m.Current) {
+		t.Fatal("wall kick failed")
+	}
+}
+
+func TestLandingPreviewMatchesHardDrop(t *testing.T) {
+	m := newModel(rand.New(rand.NewSource(1)))
+	m.Current = Piece{Type: T, X: 3}
+	ghost := m.landingPiece()
+	m.hardDrop()
+	for _, p := range m.cells(ghost) {
+		if m.Board[p.Y][p.X] != T+1 {
+			t.Fatal("preview does not match locked piece")
+		}
+	}
+}
+
+func TestLevelBoundaryUsesPreviousLevelForScore(t *testing.T) {
+	m := newModel(rand.New(rand.NewSource(1)))
+	m.Lines = 9
+	for x := range boardWidth {
+		m.Board[boardHeight-1][x] = I + 1
+	}
+	m.clearLines()
+	if m.Score != 100 || m.Level != 2 {
+		t.Fatal("incorrect level-boundary score")
+	}
+}

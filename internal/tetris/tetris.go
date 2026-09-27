@@ -53,6 +53,7 @@ type Model struct {
 	GameOver bool
 	Paused   bool
 
+	bag    []PieceType
 	random *rand.Rand
 }
 
@@ -83,6 +84,7 @@ func (m *Model) reset() {
 	m.Level = 1
 	m.GameOver = false
 	m.Paused = false
+	m.bag = nil
 	m.Current = m.newPiece()
 	m.Next = m.newPiece()
 }
@@ -141,8 +143,15 @@ func (m Model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m Model) newPiece() Piece {
-	return Piece{Type: PieceType(m.random.Intn(len(shapes))), X: 3}
+func (m *Model) newPiece() Piece {
+	if len(m.bag) == 0 {
+		for _, n := range m.random.Perm(len(shapes)) {
+			m.bag = append(m.bag, PieceType(n))
+		}
+	}
+	kind := m.bag[0]
+	m.bag = m.bag[1:]
+	return Piece{Type: kind, X: 3}
 }
 
 func (m Model) cells(piece Piece) []Point {
@@ -186,13 +195,32 @@ func (m *Model) move(dx, dy int) bool {
 }
 
 func (m *Model) rotate() bool {
-	candidate := m.Current
-	candidate.Rotation++
-	if m.valid(candidate) {
-		m.Current = candidate
-		return true
+	if m.Paused || m.GameOver {
+		return false
+	}
+	rotated := m.Current
+	rotated.Rotation++
+	for _, dx := range []int{0, -1, 1, -2, 2} {
+		candidate := rotated
+		candidate.X += dx
+		if m.valid(candidate) {
+			m.Current = candidate
+			return true
+		}
 	}
 	return false
+}
+
+func (m Model) landingPiece() Piece {
+	ghost := m.Current
+	for {
+		candidate := ghost
+		candidate.Y++
+		if !m.valid(candidate) {
+			return ghost
+		}
+		ghost = candidate
+	}
 }
 
 func (m *Model) dropOne() bool {
@@ -263,13 +291,14 @@ func (m *Model) clearLines() {
 		return
 	}
 	m.Lines += cleared
-	m.Level = 1 + m.Lines/10
 	lineScores := [...]int{0, 100, 300, 500, 800}
 	m.Score += lineScores[cleared] * m.Level
+	m.Level = 1 + m.Lines/10
 }
 
 func (m Model) View() string {
-	var rows []string
+	rows := []string{"╭" + strings.Repeat("─", boardWidth*2) + "╮"}
+	ghost := m.cells(m.landingPiece())
 	for row := 0; row < boardHeight; row++ {
 		var line strings.Builder
 		line.WriteString("│")
@@ -280,22 +309,46 @@ func (m Model) View() string {
 					value = m.Current.Type + 1
 				}
 			}
-			line.WriteString(renderCell(value))
+			cell := renderCell(value)
+			if value == 0 && !m.GameOver {
+				for _, point := range ghost {
+					if point.X == column && point.Y == row {
+						cell = statusStyle.Render("░░")
+					}
+				}
+			}
+			line.WriteString(cell)
 		}
 		line.WriteString("│")
 		rows = append(rows, line.String())
 	}
 
-	status := fmt.Sprintf("Score: %d   Lines: %d   Level: %d   [Arrows/WASD] Move/Rotate   [Enter] Drop   [P] Pause   [R] Restart   [Q] Quit", m.Score, m.Lines, m.Level)
+	rows = append(rows, "╰"+strings.Repeat("─", boardWidth*2)+"╯")
+	status := "Arrows/WASD Move / Rotate\nEnter Drop · P/Space Pause\nR Restart · M Menu · Q Quit"
 	if m.GameOver {
-		status = fmt.Sprintf("GAME OVER - Score: %d   Lines: %d   [R] Restart   [Q] Quit", m.Score, m.Lines)
+		status = "GAME OVER · R to try again\n" + status
 	} else if m.Paused {
-		status = "PAUSED   [P/Space] Resume   [R] Restart   [Q] Quit"
+		status = "PAUSED · P or Space to resume\n" + status
 	}
-
-	preview := lipgloss.NewStyle().Foreground(lipgloss.Color("#a1a1a1")).Render(fmt.Sprintf("Next: %s", pieceName(m.Next.Type)))
+	var preview []string
+	for y := 0; y < 2; y++ {
+		line := ""
+		for x := 0; x < 4; x++ {
+			value := PieceType(0)
+			for _, p := range shapes[m.Next.Type] {
+				if p.X == x && p.Y == y {
+					value = m.Next.Type + 1
+				}
+			}
+			line += renderCell(value)
+		}
+		preview = append(preview, line)
+	}
+	sidebar := fmt.Sprintf("  SCORE\n  %d\n\n  LEVEL %d\n  LINES %d\n  %d to next level\n\n  NEXT · %s\n", m.Score, m.Level, m.Lines, 10-m.Lines%10, pieceName(m.Next.Type)) +
+		lipgloss.NewStyle().PaddingLeft(2).Render(strings.Join(preview, "\n")) +
+		"\n\n  ░░ Landing preview"
 	board := lipgloss.JoinVertical(lipgloss.Left, rows...)
-	return lipgloss.JoinVertical(lipgloss.Left, titleStyle.Render("TETRIS"), preview, board, statusStyle.Render(status))
+	return lipgloss.JoinVertical(lipgloss.Left, titleStyle.Render("TETRIS · STACK & CLEAR"), lipgloss.JoinHorizontal(lipgloss.Top, board, statusStyle.Render(sidebar)), statusStyle.Render(status))
 }
 
 func renderCell(value PieceType) string {
@@ -303,7 +356,7 @@ func renderCell(value PieceType) string {
 		return "  "
 	}
 	colors := [...]lipgloss.Color{"#00d9ff", "#ffd166", "#c77dff", "#4d96ff", "#ff9f1c", "#06d6a0", "#ef476f"}
-	return lipgloss.NewStyle().Foreground(colors[value-1]).Render("[]")
+	return lipgloss.NewStyle().Foreground(colors[value-1]).Render("██")
 }
 
 func pieceName(piece PieceType) string {
