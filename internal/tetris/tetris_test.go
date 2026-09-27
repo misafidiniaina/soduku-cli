@@ -1,6 +1,7 @@
 package tetris
 
 import (
+	"github.com/charmbracelet/lipgloss"
 	"math/rand"
 	"testing"
 )
@@ -120,5 +121,17 @@ func TestLevelBoundaryUsesPreviousLevelForScore(t *testing.T) {
 	m.clearLines()
 	if m.Score != 100 || m.Level != 2 {
 		t.Fatal("incorrect level-boundary score")
+	}
+}
+
+func TestViewFitsStandardTerminal(t *testing.T) {
+	m := newModel(rand.New(rand.NewSource(1)))
+	for _, state := range []string{"playing", "paused", "over"} {
+		m.Paused = state == "paused"
+		m.GameOver = state == "over"
+		view := m.View()
+		if lipgloss.Height(view) > 24 || lipgloss.Width(view) > 80 {
+			t.Fatalf("%s view exceeds 80x24: %dx%d", state, lipgloss.Width(view), lipgloss.Height(view))
+		}
 	}
 }

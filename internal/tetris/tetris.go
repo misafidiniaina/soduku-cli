@@ -346,9 +346,9 @@ func (m Model) View() string {
 	}
 	sidebar := fmt.Sprintf("  SCORE\n  %d\n\n  LEVEL %d\n  LINES %d\n  %d to next level\n\n  NEXT · %s\n", m.Score, m.Level, m.Lines, 10-m.Lines%10, pieceName(m.Next.Type)) +
 		lipgloss.NewStyle().PaddingLeft(2).Render(strings.Join(preview, "\n")) +
-		"\n\n  ░░ Landing preview"
+		"\n\n  ░░ Landing preview" + "\n\n" + lipgloss.NewStyle().PaddingLeft(2).Render(status)
 	board := lipgloss.JoinVertical(lipgloss.Left, rows...)
-	return lipgloss.JoinVertical(lipgloss.Left, titleStyle.Render("TETRIS · STACK & CLEAR"), lipgloss.JoinHorizontal(lipgloss.Top, board, statusStyle.Render(sidebar)), statusStyle.Render(status))
+	return lipgloss.JoinVertical(lipgloss.Left, titleStyle.Render("TETRIS · STACK & CLEAR"), lipgloss.JoinHorizontal(lipgloss.Top, board, statusStyle.Render(sidebar)))
 }
 
 func renderCell(value PieceType) string {
