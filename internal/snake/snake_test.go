@@ -80,3 +80,35 @@ func TestTickRateGetsFasterWithScore(t *testing.T) {
 		t.Fatalf("tick rate = %s, want minimum %s", tickRate(100), minimumTickRate)
 	}
 }
+
+func TestOnlyOneTurnPerStep(t *testing.T) {
+	m := newModel(rand.New(rand.NewSource(1)))
+	m.changeDirection(up)
+	m.changeDirection(left)
+	if m.Direction != up {
+		t.Fatal("multiple turns allowed between movement ticks")
+	}
+	m.step()
+	m.changeDirection(left)
+	if m.Direction != left {
+		t.Fatal("turn remained locked after movement")
+	}
+}
+
+func TestFullBoardWins(t *testing.T) {
+	m := newModel(rand.New(rand.NewSource(1)))
+	m.Snake = []Point{{X: 0, Y: 0}}
+	m.Food = Point{X: 1, Y: 0}
+	for y := 0; y < boardHeight; y++ {
+		for x := 0; x < boardWidth; x++ {
+			p := Point{X: x, Y: y}
+			if p != m.Food && p != (Point{X: 0, Y: 0}) {
+				m.Snake = append(m.Snake, p)
+			}
+		}
+	}
+	m.step()
+	if !m.Won || !m.GameOver || len(m.Snake) != boardWidth*boardHeight {
+		t.Fatal("full board did not win")
+	}
+}

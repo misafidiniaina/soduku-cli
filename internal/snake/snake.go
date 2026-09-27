@@ -42,6 +42,8 @@ type Model struct {
 	BestScore int
 	GameOver  bool
 	Paused    bool
+	Won       bool
+	turned    bool
 
 	random *rand.Rand
 }
@@ -61,6 +63,7 @@ func (m *Model) reset() {
 	m.Direction = right
 	m.Score = 0
 	m.GameOver = false
+	m.Won, m.turned = false, false
 	m.Paused = false
 	m.Food = m.randomFood()
 }
@@ -116,13 +119,18 @@ func (m Model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m *Model) changeDirection(direction Direction) {
+	if m.Paused || m.GameOver || m.turned || direction == m.Direction {
+		return
+	}
 	if direction.X == -m.Direction.X && direction.Y == -m.Direction.Y {
 		return
 	}
 	m.Direction = direction
+	m.turned = true
 }
 
 func (m *Model) step() {
+	m.turned = false
 	head := m.Snake[0]
 	next := Point{X: head.X + m.Direction.X, Y: head.Y + m.Direction.Y}
 
@@ -140,6 +148,10 @@ func (m *Model) step() {
 		m.Score++
 		if m.Score > m.BestScore {
 			m.BestScore = m.Score
+		}
+		if len(m.Snake) == boardWidth*boardHeight {
+			m.Won, m.GameOver = true, true
+			return
 		}
 		m.Food = m.randomFood()
 	}
@@ -162,16 +174,23 @@ func (m Model) occupies(point Point) bool {
 }
 
 func (m Model) randomFood() Point {
-	for {
-		point := Point{X: m.random.Intn(boardWidth), Y: m.random.Intn(boardHeight)}
-		if !m.occupies(point) {
-			return point
+	free := make([]Point, 0, boardWidth*boardHeight-len(m.Snake))
+	for y := 0; y < boardHeight; y++ {
+		for x := 0; x < boardWidth; x++ {
+			p := Point{X: x, Y: y}
+			if !m.occupies(p) {
+				free = append(free, p)
+			}
 		}
 	}
+	if len(free) == 0 {
+		return Point{X: -1, Y: -1}
+	}
+	return free[m.random.Intn(len(free))]
 }
 
 func (m Model) View() string {
-	var rows []string
+	rows := []string{"╭" + strings.Repeat("─", boardWidth*2) + "╮"}
 	for y := 0; y < boardHeight; y++ {
 		var row strings.Builder
 		row.WriteString("│")
@@ -181,7 +200,8 @@ func (m Model) View() string {
 			if point == m.Food {
 				cell = foodStyle.Render("● ")
 			} else if point == m.Snake[0] {
-				cell = headStyle.Render("▣ ")
+				glyph := map[Direction]string{up: "▲ ", down: "▼ ", left: "◀ ", right: "▶ "}[m.Direction]
+				cell = headStyle.Render(glyph)
 			} else if m.occupies(point) {
 				cell = bodyStyle.Render("■ ")
 			}
@@ -191,13 +211,17 @@ func (m Model) View() string {
 		rows = append(rows, row.String())
 	}
 
+	rows = append(rows, "╰"+strings.Repeat("─", boardWidth*2)+"╯")
 	level := 1 + m.Score/scorePerLevel
-	status := fmt.Sprintf("Score: %d   Best: %d   Level: %d   [Arrows/WASD] Move   [P/Space] Pause   [R] Restart   [Q] Quit", m.Score, m.BestScore, level)
-	if m.GameOver {
-		status = fmt.Sprintf("GAME OVER - Score: %d   Best: %d   [R] Restart   [Q] Quit", m.Score, m.BestScore)
+	status := fmt.Sprintf("Score %d   Best %d   Level %d · %d/%d to next level", m.Score, m.BestScore, level, m.Score%scorePerLevel, scorePerLevel)
+	if m.Won {
+		status += "\nBOARD COMPLETE! · R to play again"
+	} else if m.GameOver {
+		status += "\nGAME OVER · R to try again"
 	} else if m.Paused {
-		status = "PAUSED   [P/Space] Resume   [R] Restart   [Q] Quit"
+		status += "\nPAUSED · P or Space to resume"
 	}
+	status += "\nArrows/WASD Move · P/Space Pause\nR Restart · M Menu · Q Quit"
 
 	title := titleStyle.Render("SNAKE")
 	board := lipgloss.JoinVertical(lipgloss.Left, rows...)
