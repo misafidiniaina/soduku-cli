@@ -8,6 +8,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/misafidiniaina/soduku-cli/internal/ui"
 )
 
 const (
@@ -48,6 +49,7 @@ type Model struct {
 	Current  Piece
 	Next     Piece
 	Score    int
+	Width    int
 	Lines    int
 	Level    int
 	GameOver bool
@@ -109,6 +111,8 @@ func tickRate(level int) time.Duration {
 
 func (m Model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 	switch message := message.(type) {
+	case tea.WindowSizeMsg:
+		m.Width = message.Width
 	case tickMsg:
 		if !m.Paused && !m.GameOver {
 			m.dropOne()
@@ -324,12 +328,6 @@ func (m Model) View() string {
 	}
 
 	rows = append(rows, "╰"+strings.Repeat("─", boardWidth*2)+"╯")
-	status := "Arrows/WASD Move / Rotate\nEnter Drop · P/Space Pause\nR Restart · M Menu · Q Quit"
-	if m.GameOver {
-		status = "GAME OVER · R to try again\n" + status
-	} else if m.Paused {
-		status = "PAUSED · P or Space to resume\n" + status
-	}
 	var preview []string
 	for y := 0; y < 2; y++ {
 		line := ""
@@ -344,11 +342,18 @@ func (m Model) View() string {
 		}
 		preview = append(preview, line)
 	}
-	sidebar := fmt.Sprintf("  SCORE\n  %d\n\n  LEVEL %d\n  LINES %d\n  %d to next level\n\n  NEXT · %s\n", m.Score, m.Level, m.Lines, 10-m.Lines%10, pieceName(m.Next.Type)) +
-		lipgloss.NewStyle().PaddingLeft(2).Render(strings.Join(preview, "\n")) +
-		"\n\n  ░░ Landing preview" + "\n\n" + lipgloss.NewStyle().PaddingLeft(2).Render(status)
+	sidebar := ui.State(m.Paused, m.GameOver, false) + "\n\n" +
+		ui.Stat("SCORE", m.Score) + "\n\n" +
+		ui.Stat("LEVEL / LINES", fmt.Sprintf("%d / %d", m.Level, m.Lines)) + "\n" +
+		fmt.Sprintf("%d lines to next level", 10-m.Lines%10) + "\n\n" +
+		ui.Stat("NEXT", pieceName(m.Next.Type)) + "\n" + strings.Join(preview, "\n") + "\n\n" +
+		ui.CmdStyle.Render("↑ / W Rotate\n←→ / AD Move · ↓ / S Drop\nEnter Instant drop\n░░ Landing preview")
+	if m.GameOver {
+		sidebar += "\nR to play again"
+	}
 	board := lipgloss.JoinVertical(lipgloss.Left, rows...)
-	return lipgloss.JoinVertical(lipgloss.Left, titleStyle.Render("TETRIS · STACK & CLEAR"), lipgloss.JoinHorizontal(lipgloss.Top, board, statusStyle.Render(sidebar)))
+	return ui.Playfield(m.Width, board, ui.Panel("TETRIS", sidebar, 26))
+
 }
 
 func renderCell(value PieceType) string {
@@ -364,6 +369,5 @@ func pieceName(piece PieceType) string {
 }
 
 var (
-	titleStyle  = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#ff9f1c"))
 	statusStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#87CEEB"))
 )
