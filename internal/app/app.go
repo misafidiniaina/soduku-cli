@@ -87,7 +87,16 @@ func (m appModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m appModel) View() string {
 	if m.active >= 0 {
-		return ui.Screen(m.width, m.height, m.names[m.active], m.games[m.active].View(), "P Pause / Resume   R Restart   M Menu   Q Quit")
+		controls := "P Pause / Resume   R Restart   M Menu   Q Quit"
+		if game, ok := m.games[m.active].(sudoku.Model); ok {
+			if game.SelectingLevel {
+				controls = "↑↓ / 1–6 Choose   Enter Confirm   M Menu   Q Quit"
+			}
+			if game.Restarting {
+				controls = "↑↓ Choose   Enter Confirm   Esc Cancel   M Menu   Q Quit"
+			}
+		}
+		return ui.Screen(m.width, m.height, m.names[m.active], m.games[m.active].View(), controls)
 	}
 
 	descriptions := []string{"Find the pattern · Six difficulty levels", "Chase the food · Beat your best score", "Stack and clear · Plan your next drop"}

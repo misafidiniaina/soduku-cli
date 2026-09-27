@@ -28,7 +28,7 @@ func Screen(width, height int, title, content, controls string) string {
 			fmt.Sprintf("Resize to at least %d × %d", lipgloss.Width(content), lipgloss.Height(content)+2) +
 			"\nYour game is paused. Press P after resizing.\nM Menu · Q Quit"
 	}
-	content = lipgloss.NewStyle().MaxWidth(width).MaxHeight(max(0, bodyHeight)).Render(content)
+	content = lipgloss.NewStyle().Background(Surface).Foreground(Fixed).MaxWidth(width).MaxHeight(max(0, bodyHeight)).Render(content)
 	body := lipgloss.Place(width, bodyHeight, lipgloss.Center, lipgloss.Center, content,
 		lipgloss.WithWhitespaceBackground(Surface))
 	if bodyHeight == 0 {

@@ -4,6 +4,8 @@ A collection of terminal games built with Go, [Bubble Tea](https://github.com/ch
 
 The launcher currently includes Sudoku, Snake, and Tetris.
 
+The arcade fills the terminal with a fixed navigation bar, centered play area, and controls along the bottom. Scores, game status, and game-specific controls align beside each board. Layouts update when the terminal is resized; windows that cannot fit the board show the required dimensions and pause play until you resize and press `p`.
+
 ## Features
 
 ### Sudoku
@@ -48,7 +50,7 @@ The launcher currently includes Sudoku, Snake, and Tetris.
 go run .
 ```
 
-When the launcher starts, choose Sudoku, Snake, or Tetris and press `Enter`. Sudoku then asks you to choose a difficulty level. Press `m` in any game to return to the launcher; games pause and retain their state. Reopen a paused game and press `p` to resume. Snake and Tetris fit an 80×24 terminal; Sudoku’s original bordered-cell board benefits from a taller window.
+When the launcher starts, choose Sudoku, Snake, or Tetris and press `Enter`. Sudoku then asks you to choose a difficulty level. Press `m` in any game to return to the launcher; games pause and retain their state. Reopen a paused game and press `p` to resume. Snake and Tetris fit an 80×24 terminal. Use at least 80×31 for Sudoku’s original bordered-cell board; 100×40 gives it more breathing room.
 
 ## Install as a CLI
 
