@@ -2,6 +2,7 @@ package game2048
 
 import (
 	"math/rand"
+	"strings"
 	"testing"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -85,6 +86,29 @@ func TestFinalSpawnCanEndGame(t *testing.T) {
 	m = press(m, "d")
 	if m.Board != before {
 		t.Fatal("game-over board accepted a move")
+	}
+	m.Paused = true
+	if !strings.Contains(m.View(), "No moves left.") {
+		t.Fatal("reopening a lost game should still show the restart prompt")
+	}
+}
+
+func TestWinningLastMoveStillCelebrates2048(t *testing.T) {
+	m := newModel(rand.New(rand.NewSource(1)))
+	m.Board = Board{{1024, 1024, 8, 16}, {8, 16, 8, 16}, {16, 8, 16, 8}, {8, 16, 8, 16}}
+	m = press(m, "a")
+	if !m.Won || !m.GameOver || !strings.Contains(m.View(), "2048 REACHED!") {
+		t.Fatal("reaching 2048 on the last legal move should still show victory")
+	}
+	m.Paused = true // Returning from the launcher must still allow resume.
+	m = press(m, "p")
+	if m.Paused {
+		t.Fatal("could not resume the winning board")
+	}
+	updated, _ := m.Update(tea.KeyMsg{Type: tea.KeyEnter})
+	m = updated.(Model)
+	if !m.KeepPlaying || !strings.Contains(m.View(), "No moves left.") {
+		t.Fatal("continuing a full board should explain there are no moves left")
 	}
 }
 

@@ -68,18 +68,21 @@ func (m Model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 			m.reset()
 			return m, nil
 		case "p", " ", "space":
-			if !m.GameOver {
+			if !m.GameOver || (m.Won && !m.KeepPlaying) {
 				m.Paused = !m.Paused
 			}
 			return m, nil
 		}
-		if m.Paused || m.GameOver {
+		if m.Paused {
 			return m, nil
 		}
 		if m.Won && !m.KeepPlaying {
 			if key == "enter" {
 				m.KeepPlaying = true
 			}
+			return m, nil
+		}
+		if m.GameOver {
 			return m, nil
 		}
 		var d direction

@@ -43,13 +43,14 @@ func (m Model) View() string {
 	}
 	status := ui.State(m.Paused, m.GameOver, false)
 	tip := "Merge tiles to reach 2048."
-	if m.GameOver {
-		tip = "No moves left.\nR to try again."
-	} else if m.Paused {
+	if m.Paused && (!m.GameOver || (m.Won && !m.KeepPlaying)) {
+		status = ui.State(true, false, false)
 		tip = "P or Space to resume."
 	} else if m.Won && !m.KeepPlaying {
 		status = lipgloss.NewStyle().Foreground(ui.Success).Bold(true).Render("2048 REACHED!")
 		tip = "Enter Keep playing\nR Start a new board"
+	} else if m.GameOver {
+		tip = "No moves left.\nR to try again."
 	} else if m.lastGain > 0 {
 		tip = fmt.Sprintf("+%d from your last move", m.lastGain)
 	}
