@@ -74,16 +74,16 @@ func CellStyle(cursorSelected, editable, inSameCol_L, sameValue, isMistake bool)
 		style = style.BorderForeground(Muted)
 	}
 
-	if sameValue && !isMistake {
-		style = style.Background(Warning)
-	}
-
 	if isMistake {
 		style = style.Foreground(Secondary).Bold(true)
 	} else if editable {
 		style = style.Foreground(Editable).Bold(false)
 	} else {
 		style = style.Foreground(Fixed).Bold(true)
+	}
+
+	if sameValue && !isMistake {
+		style = style.Background(Warning).Foreground(Surface).Bold(true)
 	}
 
 	if cursorSelected {

@@ -34,7 +34,7 @@ func Screen(width, height int, title, content, controls string) string {
 	if bodyHeight == 0 {
 		return header + "\n" + footer
 	}
-	return header + "\n" + body + "\n" + footer
+	return header + "\n" + paintSurface(body) + "\n" + footer
 }
 
 func Fits(width, height int, content string) bool {
@@ -75,4 +75,29 @@ func State(paused, over, won bool) string {
 		return lipgloss.NewStyle().Foreground(Warning).Bold(true).Render("PAUSED")
 	}
 	return lipgloss.NewStyle().Foreground(Success).Render("● PLAYING")
+}
+
+// Lip Gloss's nested styles emit full ANSI resets. Restore the canvas colors
+// after those resets so gaps, borders, and plain labels never fall back to the
+// user's terminal theme. Explicit cell and selection colors still take priority.
+func paintSurface(content string) string {
+	profile := lipgloss.ColorProfile()
+	fg := profile.Color(string(Fixed)).Sequence(false)
+	bg := profile.Color(string(Surface)).Sequence(true)
+	if fg == "" || bg == "" {
+		return content
+	}
+	base := "\x1b[" + fg + ";" + bg + "m"
+	restore := strings.NewReplacer(
+		"\x1b[0m", "\x1b[0m"+base,
+		"\x1b[m", "\x1b[m"+base,
+		"\x1b[39m", "\x1b["+fg+"m",
+		"\x1b[49m", "\x1b["+bg+"m",
+	)
+	lines := strings.Split(content, "\n")
+	for i, line := range lines {
+		// Rows must be independent for Bubble Tea's partial screen redraws.
+		lines[i] = base + restore.Replace(line) + "\x1b[0m"
+	}
+	return strings.Join(lines, "\n")
 }
