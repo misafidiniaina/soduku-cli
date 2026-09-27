@@ -2,7 +2,7 @@
 
 A collection of terminal games built with Go, [Bubble Tea](https://github.com/charmbracelet/bubbletea), and [Lip Gloss](https://github.com/charmbracelet/lipgloss).
 
-The launcher currently includes Sudoku, Snake, and Tetris.
+The launcher currently includes Sudoku, Snake, Tetris, and 2048.
 
 The arcade fills the terminal with a fixed navigation bar, centered play area, and controls along the bottom. Scores, game status, and game-specific controls align beside each board. Layouts update when the terminal is resized; windows that cannot fit the board show the required dimensions and pause play until you resize and press `p`.
 
@@ -39,6 +39,15 @@ The arcade fills the terminal with a fixed navigation bar, centered play area, a
 - Line clearing, score, and progressive levels.
 - Pause and restart flows.
 
+### 2048
+
+- Slide a colorful 4×4 board with arrows or `W` `A` `S` `D`.
+- Merge matching tiles to score points and reach 2048.
+- Brief merge highlights and markers on newly spawned tiles.
+- Score, session best, move count, and highest tile in the sidebar.
+- Continue beyond 2048, or restart with a fresh board.
+- Pause, resume, and automatic detection of a board with no legal moves.
+
 ## Requirements
 
 - Go 1.26 or newer.
@@ -50,7 +59,7 @@ The arcade fills the terminal with a fixed navigation bar, centered play area, a
 go run .
 ```
 
-When the launcher starts, choose Sudoku, Snake, or Tetris and press `Enter`. Sudoku then asks you to choose a difficulty level. Press `m` in any game to return to the launcher; games pause and retain their state. Reopen a paused game and press `p` to resume. Snake and Tetris fit an 80×24 terminal. Use at least 80×31 for Sudoku’s original bordered-cell board; 100×40 gives it more breathing room.
+When the launcher starts, choose a game and press `Enter`. Sudoku then asks you to choose a difficulty level. Press `m` in any game to return to the launcher; games pause and retain their state. Reopen a paused game and press `p` to resume. Snake, Tetris, and 2048 fit an 80×24 terminal. Use at least 80×31 for Sudoku’s original bordered-cell board; 100×40 gives it more breathing room.
 
 ## Install as a CLI
 
@@ -99,11 +108,12 @@ The project is organized into:
 - `internal/sudoku` — Sudoku Bubble Tea model, input handling, state, and rendering ([documentation](internal/sudoku/README.md)).
 - `internal/snake` — Snake Bubble Tea model, game rules, state, and rendering ([documentation](internal/snake/README.md)).
 - `internal/tetris` — Tetris Bubble Tea model, game rules, state, and rendering ([documentation](internal/tetris/README.md)).
+- `internal/game2048` — 2048 merging rules, Bubble Tea model, and tile rendering ([documentation](internal/game2048/README.md)).
 - `internal/sudoku/logic` — Sudoku scoring, timing, cursor behavior, and shared helpers.
 - `internal/sudoku/logic/gen` — Sudoku solved-board and puzzle generation.
 - `internal/ui` — terminal rendering and styles.
 
-Each game exposes the standard Bubble Tea `Init`, `Update`, and `View` methods. To add a game, create a package under `internal`, implement that interface, and register its model and display name in `newAppModel` in `internal/app/app.go`.
+Each game exposes the standard Bubble Tea `Init`, `Update`, and `View` methods. To add a game, create a package under `internal`, implement that interface, and register its model, display name, menu description, and pause handling in `internal/app/app.go`.
 
 ## License
 
