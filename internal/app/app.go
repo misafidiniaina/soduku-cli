@@ -3,6 +3,7 @@ package app
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/misafidiniaina/soduku-cli/internal/game2048"
 	"github.com/misafidiniaina/soduku-cli/internal/snake"
 	"github.com/misafidiniaina/soduku-cli/internal/sudoku"
 	"github.com/misafidiniaina/soduku-cli/internal/tetris"
@@ -14,16 +15,18 @@ type appModel struct {
 	names         []string
 	selected      int
 	active        int
-	started       [3]bool
+	started       []bool
 	width, height int
 }
 
 func newAppModel() appModel {
+	games := []tea.Model{sudoku.NewModel(), snake.NewModel(), tetris.NewModel(), game2048.NewModel()}
 	return appModel{
-		games:  []tea.Model{sudoku.NewModel(), snake.NewModel(), tetris.NewModel()},
-		names:  []string{"Sudoku", "Snake", "Tetris"},
-		active: -1,
-		width:  80, height: 24,
+		games:   games,
+		names:   []string{"Sudoku", "Snake", "Tetris", "2048"},
+		started: make([]bool, len(games)),
+		active:  -1,
+		width:   80, height: 24,
 	}
 }
 
@@ -99,7 +102,7 @@ func (m appModel) View() string {
 		return ui.Screen(m.width, m.height, m.names[m.active], m.games[m.active].View(), controls)
 	}
 
-	descriptions := []string{"Find the pattern · Six difficulty levels", "Chase the food · Beat your best score", "Stack and clear · Plan your next drop"}
+	descriptions := []string{"Find the pattern · Six difficulty levels", "Chase the food · Beat your best score", "Stack and clear · Plan your next drop", "Slide and merge · Reach the 2048 tile"}
 	options := make([]string, len(m.names))
 	for index, name := range m.names {
 		style := lipgloss.NewStyle().Padding(1, 2).Width(46)
@@ -132,6 +135,9 @@ func (m *appModel) pauseActive() {
 		game.Paused = true
 		m.games[m.active] = game
 	case tetris.Model:
+		game.Paused = true
+		m.games[m.active] = game
+	case game2048.Model:
 		game.Paused = true
 		m.games[m.active] = game
 	}

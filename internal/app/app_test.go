@@ -3,6 +3,7 @@ package app
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/misafidiniaina/soduku-cli/internal/game2048"
 	"github.com/misafidiniaina/soduku-cli/internal/snake"
 	"github.com/misafidiniaina/soduku-cli/internal/sudoku"
 	"strings"
@@ -13,7 +14,7 @@ func TestMenuNavigationAndResize(t *testing.T) {
 	m := newAppModel()
 	next, _ := m.Update(tea.KeyMsg{Type: tea.KeyUp})
 	m = next.(appModel)
-	if m.selected != 2 {
+	if m.selected != len(m.games)-1 {
 		t.Fatal("up should wrap backwards")
 	}
 	next, _ = m.Update(tea.WindowSizeMsg{Width: 100, Height: 40})
@@ -43,7 +44,7 @@ func TestReturningToGamePausesWithoutStartingAnotherTimer(t *testing.T) {
 
 func TestFullScreenViewsAcrossWindowSizes(t *testing.T) {
 	for _, size := range [][2]int{{80, 24}, {80, 31}, {120, 40}, {160, 50}, {35, 10}} {
-		for active := -1; active < 3; active++ {
+		for active := -1; active < len(newAppModel().games); active++ {
 			m := newAppModel()
 			next, _ := m.Update(tea.WindowSizeMsg{Width: size[0], Height: size[1]})
 			m = next.(appModel)
@@ -61,6 +62,40 @@ func TestFullScreenViewsAcrossWindowSizes(t *testing.T) {
 				t.Fatalf("game %d unnecessarily hidden at %v", active, size)
 			}
 		}
+	}
+}
+
+func Test2048LaunchMenuAndResize(t *testing.T) {
+	m := newAppModel()
+	m.selected = len(m.games) - 1
+	updated, _ := m.Update(tea.KeyMsg{Type: tea.KeyEnter})
+	m = updated.(appModel)
+	if _, ok := m.games[m.active].(game2048.Model); !ok {
+		t.Fatal("fourth launcher entry should open 2048")
+	}
+	if strings.Contains(m.View(), "MORE ROOM") {
+		t.Fatal("2048 should fit at the default 80x24")
+	}
+	board := m.games[m.active].(game2048.Model).Board
+	updated, _ = m.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune("m")})
+	m = updated.(appModel)
+	if m.active != -1 || !m.games[m.selected].(game2048.Model).Paused {
+		t.Fatal("returning to the launcher should pause 2048")
+	}
+	if strings.Contains(m.View(), "MORE ROOM") {
+		t.Fatal("four-game launcher should fit at 80x24")
+	}
+	updated, _ = m.Update(tea.KeyMsg{Type: tea.KeyEnter})
+	m = updated.(appModel)
+	if m.games[m.active].(game2048.Model).Board != board {
+		t.Fatal("reopening 2048 must preserve its board")
+	}
+	updated, _ = m.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune("p")})
+	m = updated.(appModel)
+	updated, _ = m.Update(tea.WindowSizeMsg{Width: 20, Height: 10})
+	m = updated.(appModel)
+	if !m.games[m.active].(game2048.Model).Paused {
+		t.Fatal("undersized window must pause 2048")
 	}
 }
 
