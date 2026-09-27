@@ -40,3 +40,7 @@ The game ends after the third mistake. A completed board displays the victory sc
 - `-50` for each mistake.
 - `-1` for each elapsed second.
 - The score never drops below zero.
+
+The compact grid highlights the selected row, column, box, and matching values. Empty or incorrect editable cells show candidate numbers computed from the visible board. The timer stops during pause, menus, and completed games. Press `Esc` to cancel the restart menu.
+
+Returning to the launcher with `m` pauses play. Choose the game again and press `p` to resume.
