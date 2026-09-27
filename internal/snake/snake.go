@@ -8,6 +8,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/misafidiniaina/soduku-cli/internal/ui"
 )
 
 const (
@@ -40,6 +41,7 @@ type Model struct {
 	Direction Direction
 	Score     int
 	BestScore int
+	Width     int
 	GameOver  bool
 	Paused    bool
 	Won       bool
@@ -88,6 +90,8 @@ func tickRate(score int) time.Duration {
 
 func (m Model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 	switch message := message.(type) {
+	case tea.WindowSizeMsg:
+		m.Width = message.Width
 	case tickMsg:
 		if !m.Paused && !m.GameOver {
 			m.step()
@@ -213,25 +217,22 @@ func (m Model) View() string {
 
 	rows = append(rows, "╰"+strings.Repeat("─", boardWidth*2)+"╯")
 	level := 1 + m.Score/scorePerLevel
-	status := fmt.Sprintf("Score %d   Best %d   Level %d · %d/%d to next level", m.Score, m.BestScore, level, m.Score%scorePerLevel, scorePerLevel)
-	if m.Won {
-		status += "\nBOARD COMPLETE! · R to play again"
-	} else if m.GameOver {
-		status += "\nGAME OVER · R to try again"
-	} else if m.Paused {
-		status += "\nPAUSED · P or Space to resume"
+	progress := strings.Repeat("━", m.Score%scorePerLevel) + strings.Repeat("─", scorePerLevel-m.Score%scorePerLevel)
+	stats := ui.State(m.Paused, m.GameOver, m.Won) + "\n\n" +
+		ui.Stat("SCORE", m.Score) + "\n\n" +
+		ui.Stat("SESSION BEST", m.BestScore) + "\n\n" +
+		ui.Stat("LEVEL", fmt.Sprintf("%d  %s", level, progress)) + "\n\n" +
+		ui.CmdStyle.Render("↑↓←→ / WASD Move\nSpace Pause")
+	if m.GameOver {
+		stats += "\nR to play again"
 	}
-	status += "\nArrows/WASD Move · P/Space Pause\nR Restart · M Menu · Q Quit"
-
-	title := titleStyle.Render("SNAKE")
 	board := lipgloss.JoinVertical(lipgloss.Left, rows...)
-	return lipgloss.JoinVertical(lipgloss.Left, title, board, statusStyle.Render(status))
+	return ui.Playfield(m.Width, board, ui.Panel("SNAKE", stats, 26))
+
 }
 
 var (
-	titleStyle  = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#7D56F4"))
-	headStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("#04B575"))
-	bodyStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("#5f7aff"))
-	foodStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff005d"))
-	statusStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#87CEEB"))
+	headStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#04B575"))
+	bodyStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#5f7aff"))
+	foodStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff005d"))
 )
