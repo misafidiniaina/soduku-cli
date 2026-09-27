@@ -6,7 +6,6 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/misafidiniaina/soduku-cli/internal/sudoku/logic"
 	"github.com/misafidiniaina/soduku-cli/internal/sudoku/logic/gen"
 	"github.com/misafidiniaina/soduku-cli/internal/ui"
@@ -179,39 +178,23 @@ func gameWon(cells, puzzle, solution [9][9]int) bool {
 
 func (m Model) View() string {
 	if m.SelectingLevel {
-		return ui.WrapperStyle.Render(ui.LevelSelector(difficulties, m.LevelIndex)) + "\n"
+		return ui.WrapperStyle.MarginTop(0).Render(ui.LevelSelector(difficulties, m.LevelIndex))
 	}
 	if m.Restarting {
-		return ui.WrapperStyle.Render(ui.RestartSelector(m.RestartChoice)) + "\n"
+		return ui.WrapperStyle.MarginTop(0).Render(ui.RestartSelector(m.RestartChoice))
 	}
-
-	var mainContent string
-	if m.GameOver {
-		mainContent = ui.GameOverStyle.Render("GAME OVER\nYou made 3 mistakes\nPress 'r' to restart or 'q' to quit")
-	} else if m.Won {
-		mainContent = ui.WinStyle.Render("YOU WIN!\nPress 'r' to play again or 'q' to quit")
-	} else if m.Paused {
-		mainContent = ui.PausedGameSyle.Render("        GAME PAUSED, \nPress 'p' to resume the game")
-	} else {
-		boardWidth := m.Width
-		if boardWidth < 1 {
-			boardWidth = 80
-		}
-		if boardWidth > 78 {
-			boardWidth = 78
-		}
-		mainContent = ui.GameBoard(m.Cells, m.Puzzle, m.cursor, boardWidth)
+	board := ui.GameBoard(m.Cells, m.Puzzle, m.cursor, 0)
+	stats := ui.State(m.Paused, m.GameOver, m.Won) + "\n\n" +
+		ui.Stat("SCORE", logic.Score(m.Cells, m.Puzzle, m.Mistake, m.Elapsed)) + "\n\n" +
+		ui.Stat("TIME", logic.Chrono(m.Elapsed)) + "\n\n" +
+		ui.Stat("DIFFICULTY", string(difficulties[m.LevelIndex])) + "\n\n" +
+		ui.Stat("MISTAKES", fmt.Sprintf("%d / 3", m.Mistake)) + "\n\n" +
+		strings.ReplaceAll(m.cellHelp(), " · ", "\n") + "\n\n" +
+		ui.CmdStyle.Render("↑↓←→ Move\n1–9 Enter number\nBackspace Clear")
+	if m.GameOver || m.Won {
+		stats += "\n\nR to play again"
 	}
-
-	gameView := lipgloss.JoinVertical(
-		lipgloss.Left,
-		ui.GameHeader(logic.Score(m.Cells, m.Puzzle, m.Mistake, m.Elapsed), string(difficulties[m.LevelIndex]), m.Mistake, logic.Chrono(m.Elapsed)),
-		mainContent,
-		ui.CmdStyle.Render(m.cellHelp()),
-		ui.CommandHelper(),
-	)
-
-	return ui.WrapperStyle.Render(gameView) + "\n"
+	return ui.Playfield(m.Width, board, ui.Panel("SUDOKU", stats, 20))
 }
 
 // Candidates use only the visible grid, so assistance never reveals the solution.
