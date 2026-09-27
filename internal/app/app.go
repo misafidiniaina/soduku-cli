@@ -14,6 +14,7 @@ type appModel struct {
 	names    []string
 	selected int
 	active   int
+	started  [3]bool
 }
 
 func newAppModel() appModel {
@@ -29,22 +30,52 @@ func (m appModel) Init() tea.Cmd {
 }
 
 func (m appModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
+	if _, isKey := message.(tea.KeyMsg); !isKey {
+		var commands []tea.Cmd
+		for i, game := range m.games {
+			updated, cmd := game.Update(message)
+			m.games[i] = updated
+			if cmd != nil {
+				commands = append(commands, cmd)
+			}
+		}
+		return m, tea.Batch(commands...)
+	}
 	if m.active < 0 {
 		if keyMessage, ok := message.(tea.KeyMsg); ok {
 			switch keyMessage.String() {
 			case "q", "ctrl+c":
 				return m, tea.Quit
-			case "up", "left", "down", "right":
+			case "up", "left":
+				m.selected = (m.selected + len(m.games) - 1) % len(m.games)
+			case "down", "right":
 				m.selected = (m.selected + 1) % len(m.games)
 			case "enter":
 				m.active = m.selected
-				return m, m.games[m.active].Init()
+				if !m.started[m.active] {
+					m.started[m.active] = true
+					return m, m.games[m.active].Init()
+				}
+				return m, nil
 			}
 		}
 		return m, nil
 	}
 
 	if keyMessage, ok := message.(tea.KeyMsg); ok && keyMessage.String() == "m" {
+		switch game := m.games[m.active].(type) {
+		case sudoku.Model:
+			if !game.SelectingLevel && !game.GameOver && !game.Won {
+				game.Paused = true
+			}
+			m.games[m.active] = game
+		case snake.Model:
+			game.Paused = true
+			m.games[m.active] = game
+		case tetris.Model:
+			game.Paused = true
+			m.games[m.active] = game
+		}
 		m.active = -1
 		return m, nil
 	}
@@ -59,13 +90,16 @@ func (m appModel) View() string {
 		return m.games[m.active].View()
 	}
 
+	descriptions := []string{"Find the pattern · Six difficulty levels", "Chase the food · Beat your best score", "Stack and clear · Plan your next drop"}
 	options := make([]string, len(m.names))
 	for index, name := range m.names {
-		style := lipgloss.NewStyle().Padding(0, 2)
+		style := lipgloss.NewStyle().Padding(1, 2)
+		prefix := "  "
 		if index == m.selected {
-			style = style.Bold(true).Foreground(ui.Success).Background(ui.Primary)
+			prefix = "› "
+			style = style.Bold(true).Foreground(ui.Fixed).Background(ui.Primary)
 		}
-		options[index] = style.Render(name)
+		options[index] = style.Render(prefix + name + "\n  " + descriptions[index])
 	}
 
 	menu := lipgloss.JoinVertical(lipgloss.Center,
@@ -79,7 +113,7 @@ func (m appModel) View() string {
 }
 
 func Run() error {
-	p := tea.NewProgram(newAppModel())
+	p := tea.NewProgram(newAppModel(), tea.WithAltScreen())
 	_, err := p.Run()
 	return err
 }
