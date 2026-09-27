@@ -1,6 +1,8 @@
 package sudoku
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -58,13 +60,19 @@ func (m Model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 		m.Width, m.Height = message.Width, message.Height
 
 	case tickMsg:
-		if !m.Paused {
+		if !m.Paused && !m.SelectingLevel && !m.Restarting && !m.GameOver && !m.Won {
 			m.Elapsed += time.Second
 		}
 		return m, tick()
 
 	case tea.KeyMsg:
 		key := message.String()
+		if key == "q" || key == "ctrl+c" {
+			return m, tea.Quit
+		}
+		if m.Paused && !m.Restarting && key != "p" && key != "r" {
+			return m, nil
+		}
 		if m.Restarting {
 			switch key {
 			case "up", "left":
@@ -72,6 +80,7 @@ func (m Model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 			case "down", "right":
 				m.RestartChoice = (m.RestartChoice + 1) % 3
 			case "enter":
+				m.Paused = false
 				switch m.RestartChoice {
 				case 0:
 					m.Cells, m.Mistake, m.Elapsed, m.Restarting, m.GameOver, m.Won = m.Puzzle, 0, 0, false, false, false
@@ -81,6 +90,8 @@ func (m Model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 				case 2:
 					m.SelectingLevel, m.Restarting = true, false
 				}
+			case "esc":
+				m.Restarting = false
 			case "q", "ctrl+c":
 				return m, tea.Quit
 			}
@@ -109,6 +120,7 @@ func (m Model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 				m.Puzzle, m.Solution = gen.PuzzleGenAt(difficulties[m.LevelIndex])
 				m.Cells = m.Puzzle
 				m.StartTime = time.Now()
+				m.Elapsed, m.Mistake, m.Paused = 0, 0, false
 				m.SelectingLevel, m.GameOver, m.Won = false, false, false
 			}
 			return m, nil
@@ -130,7 +142,9 @@ func (m Model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 		case "right":
 			m.cursor[0] = logic.CursorHandling("right", m.cursor[0])
 		case "backspace", "delete":
-			m.Cells[j][i] = 0
+			if logic.IsEditableAt(m.Puzzle, m.cursor) {
+				m.Cells[j][i] = 0
+			}
 		case "p":
 			m.Paused = !m.Paused
 		default:
@@ -193,8 +207,48 @@ func (m Model) View() string {
 		lipgloss.Left,
 		ui.GameHeader(logic.Score(m.Cells, m.Puzzle, m.Mistake, m.Elapsed), string(difficulties[m.LevelIndex]), m.Mistake, logic.Chrono(m.Elapsed)),
 		mainContent,
+		ui.CmdStyle.Render(m.cellHelp()),
 		ui.CommandHelper(),
 	)
 
 	return ui.WrapperStyle.Render(gameView) + "\n"
+}
+
+// Candidates use only the visible grid, so assistance never reveals the solution.
+func (m Model) cellHelp() string {
+	x, y := m.cursor[0], m.cursor[1]
+	filled := 0
+	for _, row := range m.Cells {
+		for _, value := range row {
+			if value > 0 {
+				filled++
+			}
+		}
+	}
+	prefix := fmt.Sprintf("%d/81 filled · Row %d, column %d", filled, y+1, x+1)
+	if m.Paused || m.GameOver || m.Won {
+		return prefix
+	}
+	if m.Puzzle[y][x] != 0 {
+		return prefix + " · Given clue"
+	}
+	if m.Cells[y][x] > 0 {
+		return prefix
+	}
+	var candidates []string
+	for n := 1; n <= 9; n++ {
+		valid := true
+		for i := 0; i < 9; i++ {
+			if m.Cells[y][i] == n || m.Cells[i][x] == n || m.Cells[y/3*3+i/3][x/3*3+i%3] == n {
+				valid = false
+			}
+		}
+		if valid {
+			candidates = append(candidates, fmt.Sprint(n))
+		}
+	}
+	if len(candidates) == 0 {
+		return prefix + " · No candidates"
+	}
+	return prefix + " · Candidates: " + strings.Join(candidates, " ")
 }

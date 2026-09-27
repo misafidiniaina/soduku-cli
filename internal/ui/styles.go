@@ -34,7 +34,7 @@ var (
 			BorderForeground(Primary)
 
 	HeadItemStyle = lipgloss.NewStyle().
-			Width(18)
+			Width(14)
 
 	HeadTextStyle = lipgloss.NewStyle().
 			Bold(true).
@@ -50,12 +50,12 @@ var (
 	PausedGameSyle = lipgloss.NewStyle().
 			Bold(true).
 			Foreground(Message).
-			Padding(14)
+			Padding(2)
 	GameOverStyle = lipgloss.NewStyle().
 			Bold(true).
 			Foreground(Secondary).
 			Align(lipgloss.Center).
-			Padding(8)
+			Padding(2)
 	WinStyle           = GameOverStyle.Copy().Foreground(Success)
 	LevelTitleStyle    = lipgloss.NewStyle().Bold(true).Foreground(Primary)
 	LevelSelectedStyle = lipgloss.NewStyle().Bold(true).Foreground(Warning)
