@@ -4,6 +4,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/misafidiniaina/soduku-cli/internal/game2048"
+	"github.com/misafidiniaina/soduku-cli/internal/minesweeper"
 	"github.com/misafidiniaina/soduku-cli/internal/snake"
 	"github.com/misafidiniaina/soduku-cli/internal/sudoku"
 	"github.com/misafidiniaina/soduku-cli/internal/tetris"
@@ -20,10 +21,10 @@ type appModel struct {
 }
 
 func newAppModel() appModel {
-	games := []tea.Model{sudoku.NewModel(), snake.NewModel(), tetris.NewModel(), game2048.NewModel()}
+	games := []tea.Model{sudoku.NewModel(), snake.NewModel(), tetris.NewModel(), game2048.NewModel(), minesweeper.NewModel()}
 	return appModel{
 		games:   games,
-		names:   []string{"Sudoku", "Snake", "Tetris", "2048"},
+		names:   []string{"Sudoku", "Snake", "Tetris", "2048", "Minesweeper"},
 		started: make([]bool, len(games)),
 		active:  -1,
 		width:   80, height: 24,
@@ -98,14 +99,20 @@ func (m appModel) View() string {
 			if game.Restarting {
 				controls = "↑↓ Choose   Enter Confirm   Esc Cancel   M Menu   Q Quit"
 			}
+		} else if game, ok := m.games[m.active].(minesweeper.Model); ok {
+			if game.SelectingDifficulty {
+				controls = "↑↓ Choose   1–3 Select   Enter Start   M Menu   Q Quit"
+			} else {
+				controls = "↑↓←→ / WASD Move   Enter Reveal   F Flag   P Pause   R Restart   M Menu   Q Quit"
+			}
 		}
 		return ui.Screen(m.width, m.height, m.names[m.active], m.games[m.active].View(), controls)
 	}
 
-	descriptions := []string{"Find the pattern · Six difficulty levels", "Chase the food · Beat your best score", "Stack and clear · Plan your next drop", "Slide and merge · Reach the 2048 tile"}
+	descriptions := []string{"Find the pattern · Six levels", "Chase the food · Beat your best", "Stack and clear · Plan your next drop", "Slide and merge · Reach 2048", "Reveal safe cells · Flag mines"}
 	options := make([]string, len(m.names))
 	for index, name := range m.names {
-		style := lipgloss.NewStyle().Padding(1, 2).Width(46)
+		style := lipgloss.NewStyle().Padding(1, 1).Width(36)
 		prefix := "  "
 		if index == m.selected {
 			prefix = "› "
@@ -113,11 +120,19 @@ func (m appModel) View() string {
 		}
 		options[index] = style.Render(prefix + name + "\n  " + descriptions[index])
 	}
+	var rows []string
+	for index := 0; index < len(options); index += 2 {
+		if index+1 < len(options) {
+			rows = append(rows, lipgloss.JoinHorizontal(lipgloss.Top, options[index], "  ", options[index+1]))
+		} else {
+			rows = append(rows, options[index])
+		}
+	}
 
 	menu := lipgloss.JoinVertical(lipgloss.Center,
 		lipgloss.NewStyle().Bold(true).Foreground(ui.Primary).Render("CLI GAMES"),
 		"",
-		lipgloss.JoinVertical(lipgloss.Left, options...),
+		lipgloss.JoinVertical(lipgloss.Left, rows...),
 		"",
 		ui.CmdStyle.Render("[↑/↓] Choose   [Enter] Start   [Q] Quit"),
 	)
@@ -138,6 +153,9 @@ func (m *appModel) pauseActive() {
 		game.Paused = true
 		m.games[m.active] = game
 	case game2048.Model:
+		game.Paused = true
+		m.games[m.active] = game
+	case minesweeper.Model:
 		game.Paused = true
 		m.games[m.active] = game
 	}
