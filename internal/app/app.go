@@ -103,7 +103,7 @@ func (m appModel) View() string {
 			if game.SelectingDifficulty {
 				controls = "↑↓ Choose   1–3 Select   Enter Start   M Menu   Q Quit"
 			} else {
-				controls = "↑↓←→ / WASD Move   Enter Reveal   F Flag   P Pause   R Restart   M Menu   Q Quit"
+				controls = "Arrows/WASD Move   Enter Reveal   F Flag   P Pause   R Reset   M Menu   Q Quit"
 			}
 		}
 		return ui.Screen(m.width, m.height, m.names[m.active], m.games[m.active].View(), controls)
