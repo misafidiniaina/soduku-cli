@@ -37,13 +37,14 @@ func (b *Board) Reveal(point Point, random *rand.Rand) (hitMine, changed bool) {
 	if !b.inBounds(point) {
 		return false, false
 	}
-	if !b.Generated {
-		b.placeMines(point, random)
-	}
 	cell := &b.Cells[point.Row][point.Col]
 	if cell.Revealed || cell.Flagged {
 		return false, false
 	}
+	if !b.Generated {
+		b.placeMines(point, random)
+	}
+	cell = &b.Cells[point.Row][point.Col]
 	if cell.Mine {
 		cell.Revealed = true
 		return true, true
