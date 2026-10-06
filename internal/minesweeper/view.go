@@ -53,6 +53,10 @@ func (m Model) difficultyView() string {
 
 func (m Model) boardView() string {
 	rows := make([]string, 0, m.Board.Height)
+	cellWidth := 2
+	if m.Board.Width > 20 {
+		cellWidth = 1
+	}
 	for row := 0; row < m.Board.Height; row++ {
 		cells := make([]string, 0, m.Board.Width)
 		for col := 0; col < m.Board.Width; col++ {
@@ -78,7 +82,7 @@ func (m Model) boardView() string {
 			if point == m.Cursor {
 				style = style.Background(ui.Warning).Foreground(ui.Surface).Bold(true)
 			}
-			cells = append(cells, style.Width(2).Align(lipgloss.Center).Render(label))
+			cells = append(cells, style.Width(cellWidth).Align(lipgloss.Center).Render(label))
 		}
 		rows = append(rows, lipgloss.JoinHorizontal(lipgloss.Top, cells...))
 	}
