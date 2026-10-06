@@ -2,7 +2,7 @@
 
 A collection of terminal games built with Go, [Bubble Tea](https://github.com/charmbracelet/bubbletea), and [Lip Gloss](https://github.com/charmbracelet/lipgloss).
 
-The launcher currently includes Sudoku, Snake, Tetris, and 2048.
+The launcher currently includes Sudoku, Snake, Tetris, 2048, and Minesweeper.
 
 The arcade fills the terminal with a fixed navigation bar, centered play area, and controls along the bottom. Scores, game status, and game-specific controls align beside each board. Layouts update when the terminal is resized; windows that cannot fit the board show the required dimensions and pause play until you resize and press `p`.
 
@@ -48,6 +48,14 @@ The arcade fills the terminal with a fixed navigation bar, centered play area, a
 - Continue beyond 2048, or restart with a fresh board.
 - Pause, resume, and automatic detection of a board with no legal moves.
 
+### Minesweeper
+
+- Beginner, Intermediate, and Expert boards with increasing sizes and mine counts.
+- A safe first reveal, numbered clues, and automatic opening of empty areas.
+- Cursor movement, flagging, a mine counter, and elapsed time.
+- Win by revealing every safe cell; revealing a mine ends the round.
+- Pause, restart, and return-to-menu flows.
+
 ## Requirements
 
 - Go 1.26 or newer.
@@ -59,7 +67,7 @@ The arcade fills the terminal with a fixed navigation bar, centered play area, a
 go run .
 ```
 
-When the launcher starts, choose a game and press `Enter`. Sudoku then asks you to choose a difficulty level. Press `m` in any game to return to the launcher; games pause and retain their state. Reopen a paused game and press `p` to resume. Snake, Tetris, and 2048 fit an 80×24 terminal. Use at least 80×31 for Sudoku’s original bordered-cell board; 100×40 gives it more breathing room.
+When the launcher starts, choose a game and press `Enter`. Sudoku and Minesweeper ask you to choose a difficulty level. Press `m` in any game to return to the launcher; games pause and retain their state. Reopen a paused game and press `p` to resume. Snake, Tetris, 2048, and all Minesweeper difficulties fit an 80×24 terminal. Use at least 80×31 for Sudoku’s original bordered-cell board; 100×40 gives it more breathing room.
 
 ## Install as a CLI
 
@@ -109,6 +117,7 @@ The project is organized into:
 - `internal/snake` — Snake Bubble Tea model, game rules, state, and rendering ([documentation](internal/snake/README.md)).
 - `internal/tetris` — Tetris Bubble Tea model, game rules, state, and rendering ([documentation](internal/tetris/README.md)).
 - `internal/game2048` — 2048 merging rules, Bubble Tea model, and tile rendering ([documentation](internal/game2048/README.md)).
+- `internal/minesweeper` — Minesweeper board generation, reveal rules, Bubble Tea model, and rendering ([documentation](internal/minesweeper/README.md)).
 - `internal/sudoku/logic` — Sudoku scoring, timing, cursor behavior, and shared helpers.
 - `internal/sudoku/logic/gen` — Sudoku solved-board and puzzle generation.
 - `internal/ui` — terminal rendering and styles.
